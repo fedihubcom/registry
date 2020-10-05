@@ -9,9 +9,6 @@ module Fedihub
   module Webapp
     class << self
       attr_reader :application
-
-      def initialize!
-      end
     end
   end
 end
