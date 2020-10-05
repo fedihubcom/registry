@@ -4,4 +4,6 @@
 
 require_relative 'config/environment'
 
+use Rack::Attack
+
 run Fedihub::Webapp::Application
