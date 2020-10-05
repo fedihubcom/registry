@@ -8,6 +8,9 @@ Bundler.require
 module Fedihub
   module Webapp
     class Application < Sinatra::Application
+      configure :development do
+        register Sinatra::Reloader
+      end
     end
   end
 end
