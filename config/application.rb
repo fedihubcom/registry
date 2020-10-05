@@ -7,8 +7,7 @@ Bundler.require
 
 module Fedihub
   module Webapp
-    class << self
-      attr_reader :application
+    class Application < Sinatra::Application
     end
   end
 end

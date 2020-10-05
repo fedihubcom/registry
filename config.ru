@@ -4,4 +4,4 @@
 
 require_relative 'config/environment'
 
-run Fedihub::Webapp.application
+run Fedihub::Webapp::Application
