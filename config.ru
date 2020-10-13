@@ -4,6 +4,4 @@
 
 require_relative 'config/environment'
 
-use Rack::Attack
-
-run Fedihub::Registry::Application
+run Fedihub::Registry.application.rack

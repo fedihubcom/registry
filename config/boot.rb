@@ -8,9 +8,9 @@ require 'bundler/setup' # Set up gems listed in the Gemfile.
 
 require 'bootsnap'
 
-cache_dir = File.join(File.expand_path('..', __dir__), 'tmp', 'cache').freeze
+cache_dir = File.expand_path('../tmp/cache', __dir__).freeze
 
-env = ENV['RACK_ENV'].freeze
+env = ENV['RACK_ENV']
 
 development_mode = ['', nil, 'development'].include?(env)
 test_mode        = env == 'test'

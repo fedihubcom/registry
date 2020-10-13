@@ -4,4 +4,4 @@
 require_relative 'application'
 
 # Initialize the application.
-Dir[File.join(__dir__, 'initializers', '*.rb')].each { |f| require f }
+Fedihub::Registry.application.initialize!
