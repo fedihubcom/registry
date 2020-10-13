@@ -18,8 +18,6 @@ module Skelerb
 
     def rack
       @rack ||= Rack::Builder.new.tap do |rack|
-        rack.use Rack::Attack
-
         rack.run router
       end
     end
