@@ -13,17 +13,30 @@ module Skelerb
     end
 
     def root=(value)
-      @root = Pathname.new(value).realpath.freeze
+      mutex.synchronize do
+        raise 'Attribute already set: root' if @root
+
+        @root = Pathname.new(value).realpath.freeze
+      end
     end
 
     def environment=(value)
-      value = String(value).to_sym
-      value = default_environment if value.empty?
-      unless ENVIRONMENT_RE.match? value
-        raise "Invalid value: #{value.inspect}"
-      end
+      mutex.synchronize do
+        raise 'Attribute already set: environment' if @environment
 
-      @environment = value
+        value = String(value).to_sym
+        unless ENVIRONMENT_RE.match? value
+          raise "Invalid value: #{value.inspect}"
+        end
+
+        @environment = value
+      end
+    end
+
+  private
+
+    def mutex
+      @mutex ||= Mutex.new
     end
   end
 end
