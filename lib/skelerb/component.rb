@@ -11,7 +11,7 @@ module Skelerb
     def initialize(application, name)
       self.application = application
       self.name = name
-      yield self if block_given?
+      yield application, self if block_given?
     end
 
   private
