@@ -32,20 +32,6 @@ module Skelerb
 
     alias [] component
 
-    def rack
-      @rack ||= Rack::Builder.new.tap do |rack|
-        rack.run router
-      end
-    end
-
-    def router
-      config = self.config
-
-      @router ||= Class.new Sinatra::Application do
-        set :environment, config.environment
-      end
-    end
-
   private
 
     def mutex
