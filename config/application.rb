@@ -11,6 +11,8 @@ Dir[File.expand_path('../lib/**/*.rb', __dir__)].sort.each do |f|
 end
 
 # Configure the application.
-Fedihub::Registry.application.root = File.expand_path '..', __dir__
-Fedihub::Registry.application.default_environment = :development
-Fedihub::Registry.application.environment = ENV['RACK_ENV']
+Fedihub::Registry.application.configure do |config|
+  config.root = File.expand_path '..', __dir__
+  config.default_environment = :development
+  config.environment = ENV['RACK_ENV']
+end
