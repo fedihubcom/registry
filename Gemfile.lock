@@ -43,6 +43,7 @@ GEM
     mustermann (1.1.1)
       ruby2_keywords (~> 0.0.1)
     nio4r (2.5.4)
+    pg (1.2.3)
     puma (5.0.2)
       nio4r (~> 2.0)
     rack (2.2.3)
@@ -98,6 +99,7 @@ PLATFORMS
 DEPENDENCIES
   activesupport (~> 6.0)
   i18n (~> 1.8)
+  pg (~> 1.2)
   puma (~> 5.0)
   rack (~> 2.2)
   rack-attack (~> 6.3)
