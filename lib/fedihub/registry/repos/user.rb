@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Fedihub
-  module Webapp
+  module Registry
     module Repos
       class User < ROM::Repository[:users]
       end

@@ -6,7 +6,7 @@ require_relative 'boot'
 Bundler.require
 
 module Fedihub
-  module Webapp
+  module Registry
     class Application < Sinatra::Application
       configure :development do
         register Sinatra::Reloader
