@@ -4,7 +4,7 @@ module Fedihub
   module Registry
     module Relations
       class Users < ROM::Relation[:sql]
-        schema infer: true
+        schema :users, infer: true
       end
     end
   end
