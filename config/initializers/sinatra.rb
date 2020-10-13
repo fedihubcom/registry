@@ -5,5 +5,9 @@
 Skelerb.app[:sinatra] do |app, component|
   Class.new Sinatra::Application do
     set :environment, app.config.env
+
+    get '/' do
+      'Hello, World!'
+    end
   end
 end
