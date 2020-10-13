@@ -3,6 +3,7 @@
 source 'https://rubygems.org'
 
 gem 'activesupport', '~> 6.0', require: false
+gem 'i18n', '~> 1.8'
 gem 'puma', '~> 5.0'
 gem 'rack', '~> 2.2'
 gem 'rack-attack', '~> 6.3'

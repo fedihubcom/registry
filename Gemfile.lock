@@ -97,6 +97,7 @@ PLATFORMS
 
 DEPENDENCIES
   activesupport (~> 6.0)
+  i18n (~> 1.8)
   puma (~> 5.0)
   rack (~> 2.2)
   rack-attack (~> 6.3)

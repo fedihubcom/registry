@@ -7,6 +7,10 @@ Skelerb.app[:sinatra] do |app, component|
     set :root, app.config.root
     set :environment, app.config.env
 
+    set :erb,
+        layout: :'site.html',
+        layout_options: { views: app.config.root.join('views/layouts') }
+
     get '/' do
       erb :'home/index.html'
     end
