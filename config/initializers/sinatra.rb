@@ -4,10 +4,11 @@
 
 Skelerb.app[:sinatra] do |app, component|
   Class.new Sinatra::Application do
+    set :root, app.config.root
     set :environment, app.config.env
 
     get '/' do
-      'Hello, World!'
+      erb :'home/index.html'
     end
   end
 end
