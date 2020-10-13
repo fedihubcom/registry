@@ -6,6 +6,7 @@ ROM::SQL.migration do
       primary_key :id
 
       column :username, String, null: false
+      column :password, String, null: false
     end
   end
 end
