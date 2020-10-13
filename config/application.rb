@@ -16,7 +16,7 @@ Dir[File.expand_path('../app/**/*.rb', __dir__)].sort.each do |f|
 end
 
 # Configure the application.
-Skelerb.application.configure do |config|
+Skelerb.app.configure do |config|
   config.root = File.expand_path '..', __dir__
   config.environment = ENV['RACK_ENV']
 end

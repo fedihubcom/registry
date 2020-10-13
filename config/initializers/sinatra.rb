@@ -2,5 +2,5 @@
 
 # Be sure to restart your server when you modify this file.
 
-Skelerb.application[:sinatra] do |component|
+Skelerb.app[:sinatra] do |component|
 end

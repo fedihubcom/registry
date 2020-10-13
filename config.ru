@@ -4,4 +4,4 @@
 
 require_relative 'config/environment'
 
-run Skelerb.application.rack
+run Skelerb.app.rack

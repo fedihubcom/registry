@@ -2,5 +2,5 @@
 
 # Be sure to restart your server when you modify this file.
 
-Skelerb.application[:rack] do |component|
+Skelerb.app[:rack] do |component|
 end

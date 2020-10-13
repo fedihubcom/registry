@@ -6,6 +6,8 @@ module Skelerb
 
     attr_reader :application, :name
 
+    alias app application
+
     def initialize(application, name)
       self.application = application
       self.name = name

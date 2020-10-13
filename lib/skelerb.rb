@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module Skelerb
-  def self.application
-    @application ||= Application.new
+  class << self
+    def application
+      @application ||= Application.new
+    end
+
+    alias app application
   end
 end

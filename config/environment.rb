@@ -4,4 +4,4 @@
 require_relative 'application'
 
 # Initialize the application.
-Skelerb.application.initialize!
+Skelerb.app.initialize!
