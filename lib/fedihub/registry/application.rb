@@ -18,15 +18,17 @@ module Fedihub
       end
 
       def rack
-        @rack ||= Rack::Builder.new do
-          use Rack::Attack
+        @rack ||= Rack::Builder.new.tap do |rack|
+          rack.use Rack::Attack
 
-          run Router
+          rack.run router
         end
       end
 
       def router
-        @router ||= Class.new Router do
+        config = self.config
+
+        @router ||= Class.new Sinatra::Application do
           set :environment, config.environment
         end
       end
