@@ -13,6 +13,5 @@ end
 # Configure the application.
 Fedihub::Registry.application.configure do |config|
   config.root = File.expand_path '..', __dir__
-  config.default_environment = :development
   config.environment = ENV['RACK_ENV']
 end
