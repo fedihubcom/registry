@@ -24,3 +24,5 @@ Bootsnap.setup(
   compile_cache_iseq: test_mode,
   compile_cache_yaml: true,
 )
+
+ENV['APP_ENV'] = nil
