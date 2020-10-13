@@ -8,10 +8,14 @@ module Skelerb
 
     alias app application
 
-    def initialize(application, name)
+    def initialize(application, name, &block)
       self.application = application
       self.name = name
-      yield application, self if block_given?
+      @block = block
+    end
+
+    def object
+      @object ||= @block&.call(app, self) or raise 'No object specified'
     end
 
   private

@@ -6,6 +6,6 @@ Skelerb.app[:rack] do |app, component|
   Rack::Builder.new do
     use Rack::Attack
 
-    run ->(_) { [200, { 'Content-Type' => 'text/plain' }, ['Hello, World!']] }
+    run app[:sinatra].object
   end
 end
