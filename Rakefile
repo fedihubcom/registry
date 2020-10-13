@@ -6,6 +6,6 @@ require 'rom/sql/rake_task'
 
 namespace :db do
   task :setup do
-    ROM::SQL::RakeSupport.env = Skelerb.app[:database].object
+    ROM::SQL::RakeSupport.env = ROM.container Skelerb.app[:database].object
   end
 end
