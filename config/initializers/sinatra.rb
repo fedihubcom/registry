@@ -12,6 +12,12 @@ Skelerb.app[:sinatra] do |app, component|
         layout_options: { views: app.config.root.join('views/layouts') }
 
     get '/' do
+      rom = app[:database].object
+
+      user_repo = Fedihub::Registry::Repos::User.new rom
+
+      @users = user_repo.users
+
       erb :'home/index.html'
     end
   end
