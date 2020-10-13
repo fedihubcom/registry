@@ -4,4 +4,4 @@
 
 require_relative 'config/environment'
 
-run Fedihub::Registry.application.rack
+run Skelerb.application.rack

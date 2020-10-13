@@ -4,4 +4,4 @@
 require_relative 'application'
 
 # Initialize the application.
-Fedihub::Registry.application.initialize!
+Skelerb.application.initialize!
