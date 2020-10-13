@@ -18,5 +18,5 @@ end
 # Configure the application.
 Skelerb.app.configure do |config|
   config.root = File.expand_path '..', __dir__
-  config.environment = ENV['RACK_ENV']
+  config.env = ENV['RACK_ENV']
 end

@@ -4,6 +4,6 @@
 
 Skelerb.app[:sinatra] do |app, component|
   Class.new Sinatra::Application do
-    set :environment, app.config.environment
+    set :environment, app.config.env
   end
 end

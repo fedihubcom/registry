@@ -12,6 +12,8 @@ module Skelerb
       @environment or raise 'No environment specified'
     end
 
+    alias env environment
+
     def root=(value)
       mutex.synchronize do
         raise 'Attribute already set: root' if @root
@@ -32,6 +34,8 @@ module Skelerb
         @environment = value
       end
     end
+
+    alias env= environment=
 
   private
 
