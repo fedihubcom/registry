@@ -2,7 +2,6 @@
 
 source 'https://rubygems.org'
 
-gem 'bootsnap', '~> 1.4', require: false
 gem 'puma', '~> 5.0'
 gem 'rack', '~> 2.2'
 gem 'rom', '~> 5.2'
