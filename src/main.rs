@@ -5,6 +5,7 @@ mod database;
 mod routes;
 mod schema;
 mod models;
+mod forms;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate rocket;
