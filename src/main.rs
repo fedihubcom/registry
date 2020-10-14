@@ -9,12 +9,14 @@ use rocket_contrib::templates::Template;
 #[derive(Serialize)]
 struct TemplateContext {
     parent: &'static str,
+    users: Vec<&'static str>,
 }
 
 #[get("/")]
 fn index() -> Template {
     let template_context = TemplateContext {
         parent: "layout",
+        users: vec!["foo", "bar", "car"],
     };
 
     Template::render("index", &template_context)
