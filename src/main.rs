@@ -20,6 +20,8 @@ use rocket_contrib::templates::Template;
 use std::env;
 use std::ops::Deref;
 
+struct DbPool(Pool<ConnectionManager<PgConnection>>);
+
 struct DbConn(PooledConnection<ConnectionManager<PgConnection>>);
 
 impl<'a, 'r> FromRequest<'a, 'r> for DbConn {
@@ -27,9 +29,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for DbConn {
 
     fn from_request(request: &'a Request<'r>) -> request::Outcome<DbConn, ()> {
         let pool =
-            request.guard::<State<Pool<ConnectionManager<PgConnection>>>>()?;
+            request.guard::<State<DbPool>>()?;
 
-        match pool.get() {
+        match pool.0.get() {
             Ok(conn) => Outcome::Success(DbConn(conn)),
             Err(_) => Outcome::Failure((Status::ServiceUnavailable, ())),
         }
@@ -68,13 +70,13 @@ fn rocket() -> rocket::Rocket {
         .mount("/", routes())
 }
 
-fn create_db_pool() -> Pool<ConnectionManager<PgConnection>> {
+fn create_db_pool() -> DbPool {
     let credentials = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
 
     let manager = ConnectionManager::<PgConnection>::new(credentials);
 
-    Pool::new(manager).expect("Failed to create database pool")
+    DbPool(Pool::new(manager).expect("Failed to create database pool"))
 }
 
 fn routes() -> Vec<rocket::Route> {
