@@ -10,14 +10,11 @@ mod models;
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate serde_derive;
 
-extern crate dotenv;
 extern crate rocket_contrib;
 
 use rocket_contrib::templates::Template;
 
 fn main() {
-    dotenv::dotenv().ok();
-
     let config = config::Config::default().unwrap();
 
     rocket(config).launch();
@@ -25,7 +22,7 @@ fn main() {
 
 fn rocket(config: config::Config) -> rocket::Rocket {
     rocket::custom(config.to_rocket_config_builder().finalize().unwrap())
-        .manage(database::create_db_pool())
+        .manage(database::create_db_pool(config.database_url))
         .attach(Template::fairing())
         .mount("/", routes::routes())
 }

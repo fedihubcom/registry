@@ -4,7 +4,6 @@ use r2d2::{Pool, PooledConnection};
 use rocket::{Outcome, Request, State};
 use rocket::http::Status;
 use rocket::request::{self, FromRequest};
-use std::env;
 use std::ops::Deref;
 
 pub struct DbPool(Pool<ConnectionManager<PgConnection>>);
@@ -33,11 +32,8 @@ impl Deref for DbConn {
     }
 }
 
-pub fn create_db_pool() -> DbPool {
-    let credentials = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
-
-    let manager = ConnectionManager::<PgConnection>::new(credentials);
+pub fn create_db_pool(database_url: String) -> DbPool {
+    let manager = ConnectionManager::<PgConnection>::new(database_url);
 
     DbPool(Pool::new(manager).expect("Failed to create database pool"))
 }
