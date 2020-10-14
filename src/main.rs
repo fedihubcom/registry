@@ -2,11 +2,16 @@
 
 #[macro_use] extern crate rocket;
 
+use rocket_contrib::templates::Template;
+
 #[get("/")]
-fn index() -> &'static str {
-    "Hello, World!"
+fn index() -> Template {
+    Template::render("index", &1)
 }
 
 fn main() {
-    rocket::ignite().mount("/", routes![index]).launch();
+    rocket::ignite()
+        .attach(Template::fairing())
+        .mount("/", routes![index])
+        .launch();
 }
