@@ -59,6 +59,13 @@ impl Config {
          )
     }
 
+    pub fn to_rocket_config(&self) -> Result<RocketConfig, ()> {
+        match self.to_rocket_config_builder().finalize() {
+            Err(_) => Err(()),
+            Ok(rocket_config) => Ok(rocket_config),
+        }
+    }
+
     pub fn to_rocket_config_builder(&self) -> RocketConfigBuilder {
         RocketConfig::build(self.environment.to_rocket_environment())
             .root(self.root.to_string())
