@@ -1,5 +1,6 @@
 #![feature(decl_macro, proc_macro_hygiene)]
 
+mod database;
 mod schema;
 
 #[macro_use] extern crate diesel;
@@ -9,42 +10,8 @@ mod schema;
 extern crate dotenv;
 extern crate rocket_contrib;
 
-use diesel::pg::PgConnection;
 use diesel::prelude::*;
-use diesel::r2d2::ConnectionManager;
-use r2d2::{Pool, PooledConnection};
-use rocket::{Outcome, Request, State};
-use rocket::http::Status;
-use rocket::request::{self, FromRequest};
 use rocket_contrib::templates::Template;
-use std::env;
-use std::ops::Deref;
-
-struct DbPool(Pool<ConnectionManager<PgConnection>>);
-
-struct DbConn(PooledConnection<ConnectionManager<PgConnection>>);
-
-impl<'a, 'r> FromRequest<'a, 'r> for DbConn {
-    type Error = ();
-
-    fn from_request(request: &'a Request<'r>) -> request::Outcome<DbConn, ()> {
-        let pool =
-            request.guard::<State<DbPool>>()?;
-
-        match pool.0.get() {
-            Ok(conn) => Outcome::Success(DbConn(conn)),
-            Err(_) => Outcome::Failure((Status::ServiceUnavailable, ())),
-        }
-    }
-}
-
-impl Deref for DbConn {
-    type Target = PgConnection;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -65,18 +32,9 @@ fn main() {
 
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
-        .manage(create_db_pool())
+        .manage(database::create_db_pool())
         .attach(Template::fairing())
         .mount("/", routes())
-}
-
-fn create_db_pool() -> DbPool {
-    let credentials = env::var("DATABASE_URL")
-        .expect("DATABASE_URL must be set");
-
-    let manager = ConnectionManager::<PgConnection>::new(credentials);
-
-    DbPool(Pool::new(manager).expect("Failed to create database pool"))
 }
 
 fn routes() -> Vec<rocket::Route> {
@@ -84,7 +42,7 @@ fn routes() -> Vec<rocket::Route> {
 }
 
 #[get("/")]
-fn index(db_conn: DbConn) -> Template {
+fn index(db_conn: database::DbConn) -> Template {
     use schema::users::dsl::*;
 
     let all_users = users.load::<User>(&*db_conn).expect("Error loading users");
