@@ -1,5 +1,6 @@
 #![feature(decl_macro, proc_macro_hygiene)]
 
+pub mod config;
 mod database;
 mod routes;
 mod schema;
@@ -16,11 +17,14 @@ use rocket_contrib::templates::Template;
 
 fn main() {
     dotenv::dotenv().ok();
-    rocket().launch();
+
+    let config = config::Config::default().unwrap();
+
+    rocket(config).launch();
 }
 
-fn rocket() -> rocket::Rocket {
-    rocket::ignite()
+fn rocket(config: config::Config) -> rocket::Rocket {
+    rocket::custom(config.to_rocket_config_builder().finalize().unwrap())
         .manage(database::create_db_pool())
         .attach(Template::fairing())
         .mount("/", routes::routes())
