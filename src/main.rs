@@ -19,7 +19,11 @@ fn main() {
 fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .attach(Template::fairing())
-        .mount("/", routes![index])
+        .mount("/", routes())
+}
+
+fn routes() -> Vec<rocket::Route> {
+    routes![index]
 }
 
 #[get("/")]
