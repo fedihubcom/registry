@@ -1,3 +1,5 @@
+use crate::config;
+
 use diesel::pg::PgConnection;
 use diesel::r2d2::ConnectionManager;
 use r2d2::{Pool, PooledConnection};
@@ -32,8 +34,8 @@ impl Deref for DbConn {
     }
 }
 
-pub fn create_db_pool(database_url: String) -> DbPool {
-    let manager = ConnectionManager::<PgConnection>::new(database_url);
+pub fn create_db_pool(config: config::Config) -> DbPool {
+    let manager = ConnectionManager::<PgConnection>::new(config.database_url);
 
     DbPool(Pool::new(manager).expect("Failed to create database pool"))
 }

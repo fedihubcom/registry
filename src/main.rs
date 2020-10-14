@@ -22,7 +22,7 @@ fn main() {
 
 fn rocket(config: config::Config) -> rocket::Rocket {
     rocket::custom(config.to_rocket_config_builder().finalize().unwrap())
-        .manage(database::create_db_pool(config.database_url))
+        .manage(database::create_db_pool(config))
         .attach(Template::fairing())
         .mount("/", routes::routes())
 }
