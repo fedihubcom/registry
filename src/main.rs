@@ -2,6 +2,7 @@
 
 mod database;
 mod schema;
+mod models;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate rocket;
@@ -17,12 +18,6 @@ use rocket_contrib::templates::Template;
 struct TemplateContext {
     parent: &'static str,
     users: Vec<String>,
-}
-
-#[derive(Debug, Queryable)]
-struct User {
-    pub id: i32,
-    pub username: String,
 }
 
 fn main() {
@@ -45,7 +40,7 @@ fn routes() -> Vec<rocket::Route> {
 fn index(db_conn: database::DbConn) -> Template {
     use schema::users::dsl::*;
 
-    let all_users = users.load::<User>(&*db_conn).expect("Error loading users");
+    let all_users = users.load::<models::User>(&*db_conn).expect("Error loading users");
     let all_user_names = all_users.iter().map(|user| user.username.to_string()).collect();
 
     let template_context = TemplateContext {
