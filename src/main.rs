@@ -12,6 +12,13 @@ struct TemplateContext {
     users: Vec<&'static str>,
 }
 
+fn main() {
+    rocket::ignite()
+        .attach(Template::fairing())
+        .mount("/", routes![index])
+        .launch();
+}
+
 #[get("/")]
 fn index() -> Template {
     let template_context = TemplateContext {
@@ -20,11 +27,4 @@ fn index() -> Template {
     };
 
     Template::render("index", &template_context)
-}
-
-fn main() {
-    rocket::ignite()
-        .attach(Template::fairing())
-        .mount("/", routes![index])
-        .launch();
 }
