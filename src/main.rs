@@ -13,10 +13,13 @@ struct TemplateContext {
 }
 
 fn main() {
+    rocket().launch();
+}
+
+fn rocket() -> rocket::Rocket {
     rocket::ignite()
         .attach(Template::fairing())
         .mount("/", routes![index])
-        .launch();
 }
 
 #[get("/")]
