@@ -9,7 +9,7 @@ use validator::Validate;
 
 #[derive(Serialize)]
 struct TemplateContext {
-    parent: &'static str,
+    layout: &'static str,
     users: Option<Vec<models::User>>,
 }
 
@@ -22,7 +22,7 @@ fn index(db_conn: database::DbConn) -> Template {
     let all_users = models::User::all(db_conn).unwrap();
 
     let template_context = TemplateContext {
-        parent: "site",
+        layout: "site",
         users: Some(all_users),
     };
 
@@ -32,7 +32,7 @@ fn index(db_conn: database::DbConn) -> Template {
 #[get("/sign_up")]
 fn sign_up_show() -> Template {
     let template_context = TemplateContext {
-        parent: "site",
+        layout: "site",
         users: None,
     };
 
