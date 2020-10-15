@@ -30,7 +30,7 @@ fn index(db_conn: database::DbConn) -> Template {
 }
 
 #[get("/sign_up")]
-fn sign_up_show(db_conn: database::DbConn) -> Template {
+fn sign_up_show() -> Template {
     let template_context = TemplateContext {
         parent: "site",
         users: None,
