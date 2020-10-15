@@ -8,13 +8,6 @@ use rocket_contrib::templates::Template;
 
 #[derive(Debug, rocket::response::Responder)]
 #[response(content_type = "text/html")]
-enum IndexResponse {
-    #[response(status = 500)]
-    UnknownError(()),
-}
-
-#[derive(Debug, rocket::response::Responder)]
-#[response(content_type = "text/html")]
 enum UserSignUpResponse {
     #[response(status = 422)]
     InvalidForm(Template),
@@ -27,24 +20,44 @@ struct BasicTemplateContext {
     layout: &'static str,
 }
 
-#[derive(Serialize)]
-struct IndexTemplateContext {
-    layout: &'static str,
-    users: Vec<models::User>,
-}
-
 pub fn routes() -> Vec<rocket::Route> {
-    routes![index, sign_up_show, sign_up]
+    routes![home::index, sign_up_show, sign_up]
 }
 
-#[get("/")]
-fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
-    let all_users = models::User::all(db_conn)?;
+mod home {
+    use crate::database;
+    use crate::models;
 
-    Ok(Template::render("index", &IndexTemplateContext {
-        layout: "site",
-        users: all_users,
-    }))
+    use rocket_contrib::templates::Template;
+
+    #[derive(Debug, rocket::response::Responder)]
+    #[response(content_type = "text/html")]
+    pub enum IndexResponse {
+        #[response(status = 500)]
+        UnknownError(()),
+    }
+
+    #[derive(Serialize)]
+    struct IndexTemplateContext {
+        layout: &'static str,
+        users: Vec<models::User>,
+    }
+
+    #[get("/")]
+    pub fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
+        let all_users = models::User::all(db_conn)?;
+
+        Ok(Template::render("index", &IndexTemplateContext {
+            layout: "site",
+            users: all_users,
+        }))
+    }
+
+    impl From<diesel::result::Error> for IndexResponse {
+        fn from(_: diesel::result::Error) -> Self {
+            Self::UnknownError(())
+        }
+    }
 }
 
 #[get("/sign_up")]
@@ -63,13 +76,7 @@ fn sign_up(
     models::NewUser::from_form(form.0)?
         .save(db_conn)?;
 
-    Ok(Redirect::to(uri!(index)))
-}
-
-impl From<diesel::result::Error> for IndexResponse {
-    fn from(_: diesel::result::Error) -> Self {
-        Self::UnknownError(())
-    }
+    Ok(Redirect::to(uri!(home::index)))
 }
 
 impl From<validator::ValidationErrors> for UserSignUpResponse {
