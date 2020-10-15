@@ -47,14 +47,14 @@ impl Environment {
 
 impl Config {
     pub fn default() -> Result<Self, ()> {
-        let root = match current_dir() {
+        let default_root = match current_dir() {
             Err(_) => return Err(()),
             Ok(value) => value,
         };
 
         Ok(
             Config {
-                root,
+                root: default_root,
                 environment: DEFAULT_ENVIRONMENT,
                 address: DEFAULT_ADDRESS.to_string(),
                 port: DEFAULT_PORT,
