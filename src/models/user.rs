@@ -20,14 +20,14 @@ pub struct NewUser<'a> {
 }
 
 impl User {
-    pub fn all(db_conn: DbConn) -> Result<Vec<User>, ()> {
+    pub fn all(db_conn: DbConn) -> Result<Vec<Self>, ()> {
         let query = users::table.as_query();
 
         let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
 
         println!("{}", debug);
 
-        let result = query.load::<User>(&*db_conn);
+        let result = query.load::<Self>(&*db_conn);
 
         match result {
             Err(_) => Err(()),
