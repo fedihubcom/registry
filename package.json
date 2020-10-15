@@ -1,0 +1,10 @@
+{
+  "name": "fedihub-registry",
+  "version": "0.0.0",
+  "description": "User registry",
+  "main": "index.js",
+  "repository": "https://github.com/fedihubcom/registry.git",
+  "author": "Alex Kotov <kotovalexarian@gmail.com>",
+  "license": "MIT",
+  "private": true
+}
