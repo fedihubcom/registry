@@ -14,7 +14,7 @@ struct TemplateContext {
 }
 
 pub fn routes() -> Vec<rocket::Route> {
-    routes![index, sign_up]
+    routes![index, sign_up_show, sign_up]
 }
 
 #[get("/")]
@@ -27,6 +27,16 @@ fn index(db_conn: database::DbConn) -> Template {
     };
 
     Template::render("index", &template_context)
+}
+
+#[get("/sign_up")]
+fn sign_up_show(db_conn: database::DbConn) -> Template {
+    let template_context = TemplateContext {
+        parent: "layout",
+        users: None,
+    };
+
+    Template::render("sign_up", &template_context)
 }
 
 #[post("/users", data = "<user_sign_up_form>")]
