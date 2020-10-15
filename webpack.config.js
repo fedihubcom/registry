@@ -9,11 +9,11 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'public/assets'),
     publicPath: '/assets/',
-    filename: 'site.js',
+    filename: 'bundle.js',
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'site.css',
+      filename: 'bundle.css',
     }),
   ],
   module: {
