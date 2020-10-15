@@ -41,21 +41,17 @@ pub fn routes() -> Vec<rocket::Route> {
 fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
     let all_users = models::User::all(db_conn)?;
 
-    let template_context = IndexTemplateContext {
+    Ok(Template::render("index", &IndexTemplateContext {
         layout: "site",
         users: all_users,
-    };
-
-    Ok(Template::render("index", &template_context))
+    }))
 }
 
 #[get("/sign_up")]
 fn sign_up_show() -> Template {
-    let template_context = BasicTemplateContext {
+    Template::render("sign_up", &BasicTemplateContext {
         layout: "site",
-    };
-
-    Template::render("sign_up", &template_context)
+    })
 }
 
 #[post("/users", data = "<form>")]
@@ -78,11 +74,9 @@ impl From<diesel::result::Error> for IndexResponse {
 
 impl From<validator::ValidationErrors> for UserSignUpResponse {
     fn from(_validation_errors: validator::ValidationErrors) -> Self {
-        let template_context = BasicTemplateContext {
+        Self::InvalidForm(Template::render("sign_up", &BasicTemplateContext {
             layout: "site",
-        };
-
-        Self::InvalidForm(Template::render("sign_up", &template_context))
+        }))
     }
 }
 
