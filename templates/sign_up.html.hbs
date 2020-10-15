@@ -1,12 +1,20 @@
 {{#*inline "page"}}
+<div class="container">
+  <h1>Sign Up</h1>
 
-<h1>Sign Up</h1>
+  <form action="/sign_up">
+    <div class="form-group">
+      <input type="text" class="form-control"/>
+    </div>
 
-<form action="/sign_up">
-  <input type="text"/>
-  <input type="password"/>
-  <button type="submit">Sign Up</button>
-</form>
+    <div class="form-group">
+      <input type="password" class="form-control"/>
+    </div>
 
+    <button type="submit" class="btn btn-primary">
+      Sign Up
+    </button>
+  </form>
+</div>
 {{/inline}}
 {{~> (parent)~}}
