@@ -6,10 +6,31 @@ use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
+#[derive(Debug, rocket::response::Responder)]
+#[response(content_type = "text/html")]
+enum IndexResponse {
+    #[response(status = 500)]
+    UnknownError(()),
+}
+
+#[derive(Debug, rocket::response::Responder)]
+#[response(content_type = "text/html")]
+enum UserSignUpResponse {
+    #[response(status = 422)]
+    InvalidForm(Template),
+    #[response(status = 500)]
+    UnknownError(()),
+}
+
 #[derive(Serialize)]
-struct TemplateContext {
+struct BasicTemplateContext {
     layout: &'static str,
-    users: Option<Vec<models::User>>,
+}
+
+#[derive(Serialize)]
+struct IndexTemplateContext {
+    layout: &'static str,
+    users: Vec<models::User>,
 }
 
 pub fn routes() -> Vec<rocket::Route> {
@@ -17,14 +38,12 @@ pub fn routes() -> Vec<rocket::Route> {
 }
 
 #[get("/")]
-fn index(db_conn: database::DbConn) -> Result<Template, Redirect> {
-    let all_users = models::User::all(db_conn)
-        .map_err(|_| Redirect::to(uri!(index)))?
-        ;
+fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
+    let all_users = models::User::all(db_conn)?;
 
-    let template_context = TemplateContext {
+    let template_context = IndexTemplateContext {
         layout: "site",
-        users: Some(all_users),
+        users: all_users,
     };
 
     Ok(Template::render("index", &template_context))
@@ -32,9 +51,8 @@ fn index(db_conn: database::DbConn) -> Result<Template, Redirect> {
 
 #[get("/sign_up")]
 fn sign_up_show() -> Template {
-    let template_context = TemplateContext {
+    let template_context = BasicTemplateContext {
         layout: "site",
-        users: None,
     };
 
     Template::render("sign_up", &template_context)
@@ -44,13 +62,32 @@ fn sign_up_show() -> Template {
 fn sign_up(
     db_conn: database::DbConn,
     form: Form<forms::UserSignUp>,
-) -> Result<Redirect, Redirect>
+) -> Result<Redirect, UserSignUpResponse>
 {
-    models::NewUser::from_form(form.0)
-        .map_err(|_| Redirect::to(uri!(sign_up_show)))?
-        .save(db_conn)
-        .map_err(|_| Redirect::to(uri!(sign_up_show)))?
-        ;
+    models::NewUser::from_form(form.0)?
+        .save(db_conn)?;
 
     Ok(Redirect::to(uri!(index)))
+}
+
+impl From<()> for IndexResponse {
+    fn from(_: ()) -> Self {
+        Self::UnknownError(())
+    }
+}
+
+impl From<validator::ValidationErrors> for UserSignUpResponse {
+    fn from(_validation_errors: validator::ValidationErrors) -> Self {
+        let template_context = BasicTemplateContext {
+            layout: "site",
+        };
+
+        Self::InvalidForm(Template::render("sign_up", &template_context))
+    }
+}
+
+impl From<()> for UserSignUpResponse {
+    fn from(_: ()) -> Self {
+        Self::UnknownError(())
+    }
 }
