@@ -22,7 +22,7 @@ fn index(db_conn: database::DbConn) -> Template {
     let all_users = models::User::all(db_conn).unwrap();
 
     let template_context = TemplateContext {
-        parent: "layout",
+        parent: "site",
         users: Some(all_users),
     };
 
@@ -32,7 +32,7 @@ fn index(db_conn: database::DbConn) -> Template {
 #[get("/sign_up")]
 fn sign_up_show(db_conn: database::DbConn) -> Template {
     let template_context = TemplateContext {
-        parent: "layout",
+        parent: "site",
         users: None,
     };
 
