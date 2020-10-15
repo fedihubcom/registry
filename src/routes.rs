@@ -12,6 +12,16 @@ mod home {
 
     use rocket_contrib::templates::Template;
 
+    #[get("/")]
+    pub fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
+        let all_users = models::User::all(db_conn)?;
+
+        Ok(Template::render("index", &IndexTemplateContext {
+            layout: "site",
+            users: all_users,
+        }))
+    }
+
     #[derive(Debug, rocket::response::Responder)]
     #[response(content_type = "text/html")]
     pub enum IndexResponse {
@@ -23,16 +33,6 @@ mod home {
     struct IndexTemplateContext {
         layout: &'static str,
         users: Vec<models::User>,
-    }
-
-    #[get("/")]
-    pub fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
-        let all_users = models::User::all(db_conn)?;
-
-        Ok(Template::render("index", &IndexTemplateContext {
-            layout: "site",
-            users: all_users,
-        }))
     }
 
     impl From<diesel::result::Error> for IndexResponse {
@@ -51,20 +51,6 @@ mod users {
     use rocket::request::Form;
     use rocket_contrib::templates::Template;
 
-    #[derive(Debug, rocket::response::Responder)]
-    #[response(content_type = "text/html")]
-    pub enum UserSignUpResponse {
-        #[response(status = 422)]
-        InvalidForm(Template),
-        #[response(status = 500)]
-        UnknownError(()),
-    }
-
-    #[derive(Serialize)]
-    struct BasicTemplateContext {
-        layout: &'static str,
-    }
-
     #[get("/sign_up")]
     pub fn sign_up_show() -> Template {
         Template::render("sign_up", &BasicTemplateContext {
@@ -82,6 +68,20 @@ mod users {
             .save(db_conn)?;
 
         Ok(Redirect::to(uri!(super::home::index)))
+    }
+
+    #[derive(Debug, rocket::response::Responder)]
+    #[response(content_type = "text/html")]
+    pub enum UserSignUpResponse {
+        #[response(status = 422)]
+        InvalidForm(Template),
+        #[response(status = 500)]
+        UnknownError(()),
+    }
+
+    #[derive(Serialize)]
+    struct BasicTemplateContext {
+        layout: &'static str,
     }
 
     impl From<validator::ValidationErrors> for UserSignUpResponse {
