@@ -5,3 +5,5 @@ CREATE TABLE users (
   username VARCHAR NOT NULL,
   encrypted_password VARCHAR NOT NULL
 );
+
+CREATE UNIQUE INDEX index_users_on_username ON users USING btree (username);
