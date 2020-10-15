@@ -25,6 +25,15 @@ pub struct Config {
 }
 
 impl Environment {
+    pub fn from_string(value: String) -> Self {
+        match value.to_lowercase().as_str() {
+            "development" | "dev" => Self::Development,
+            "test"                => Self::Test,
+            "production" | "prod" => Self::Production,
+            _                     => Self::Development,
+        }
+    }
+
     pub fn to_rocket_environment(&self) -> RocketEnvironment {
         match self {
             Environment::Development => RocketEnvironment::Development,
@@ -36,25 +45,82 @@ impl Environment {
 
 impl Config {
     pub fn default() -> Result<Self, ()> {
-        let root_path_buf = match std::env::current_dir() {
+        let root = match current_dir() {
             Err(_) => return Err(()),
             Ok(value) => value,
         };
 
-        let root_str = match root_path_buf.to_str() {
-            None => return Err(()),
-            Some(value) => value,
-        };
-
-        let root_string = root_str.to_string();
-
         Ok(
             Config {
-                root: root_string,
+                root,
                 environment: DEFAULT_ENVIRONMENT,
                 address: DEFAULT_ADDRESS.to_string(),
                 port: DEFAULT_PORT,
                 database_url: DEFAULT_DATABASE_URL.to_string(),
+            }
+         )
+    }
+
+    pub fn from_env() -> Result<Self, ()> {
+        let root = match current_dir() {
+            Err(_) => return Err(()),
+            Ok(value) => value,
+        };
+
+        let environment = match std::env::var("ENVIRONMENT") {
+            Ok(value) => Environment::from_string(value),
+            Err(error) => match error {
+                std::env::VarError::NotPresent => DEFAULT_ENVIRONMENT,
+                std::env::VarError::NotUnicode(_) => return Err(()),
+            },
+        };
+
+        let address = match std::env::var("ADDRESS") {
+            Ok(value) =>
+                if value.is_empty() {
+                    DEFAULT_ADDRESS.to_string()
+                }
+                else {
+                    value
+                },
+            Err(error) => match error {
+                std::env::VarError::NotPresent => DEFAULT_ADDRESS.to_string(),
+                std::env::VarError::NotUnicode(_) => return Err(()),
+            },
+        };
+
+        let port = match std::env::var("PORT") {
+            Ok(value) => match value.parse::<u16>() {
+                Ok(value) => value,
+                Err(_) => return Err(()),
+            },
+            Err(error) => match error {
+                std::env::VarError::NotPresent => DEFAULT_PORT,
+                std::env::VarError::NotUnicode(_) => return Err(()),
+            },
+        };
+
+        let database_url = match std::env::var("DATABASE_URL") {
+            Ok(value) =>
+                if value.is_empty() {
+                    DEFAULT_DATABASE_URL.to_string()
+                }
+                else {
+                    value
+                },
+            Err(error) => match error {
+                std::env::VarError::NotPresent => DEFAULT_DATABASE_URL.to_string(),
+                std::env::VarError::NotUnicode(_) => return Err(()),
+            },
+        };
+
+        Ok(
+            Config {
+                root,
+                environment,
+                address,
+                port,
+                database_url,
             }
          )
     }
@@ -72,4 +138,18 @@ impl Config {
             .address(self.address.to_string())
             .port(self.port)
     }
+}
+
+fn current_dir() -> Result<String, ()> {
+    let root_path_buf = match std::env::current_dir() {
+        Err(_) => return Err(()),
+        Ok(value) => value,
+    };
+
+    let root_str = match root_path_buf.to_str() {
+        None => return Err(()),
+        Some(value) => value,
+    };
+
+    Ok(root_str.to_string())
 }
