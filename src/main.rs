@@ -19,5 +19,6 @@ extern crate rocket_contrib;
 fn main() {
     dotenv::dotenv().unwrap();
     let config = config::Config::from_env().unwrap();
+    println!("Running with {:#?}", config);
     web::rocket(config).launch();
 }

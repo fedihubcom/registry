@@ -10,12 +10,14 @@ const DEFAULT_PORT: u16 = 8000;
 const DEFAULT_DATABASE_URL: &str =
     "postgres://fedihub:fedihub@localhost/fedihub_development";
 
+#[derive(Debug)]
 pub enum Environment {
     Development,
     Test,
     Production,
 }
 
+#[derive(Debug)]
 pub struct Config {
     pub root: String,
     pub environment: Environment,
