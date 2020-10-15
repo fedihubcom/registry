@@ -14,7 +14,7 @@ pub fn rocket(config: config::Config) -> Result<rocket::Rocket, ()> {
         .manage(database::create_db_pool(config))
         .attach(Template::fairing())
         .mount("/", routes::routes())
-        .mount("/public", StaticFiles::new(public_path, ServeOptions::None));
+        .mount("/", StaticFiles::new(public_path, ServeOptions::None));
 
     Ok(result)
 }
