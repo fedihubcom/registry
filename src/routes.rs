@@ -1,27 +1,9 @@
-use crate::database;
-use crate::models;
-use crate::forms;
-
-use rocket::response::Redirect;
-use rocket::request::Form;
-use rocket_contrib::templates::Template;
-
-#[derive(Debug, rocket::response::Responder)]
-#[response(content_type = "text/html")]
-enum UserSignUpResponse {
-    #[response(status = 422)]
-    InvalidForm(Template),
-    #[response(status = 500)]
-    UnknownError(()),
-}
-
-#[derive(Serialize)]
-struct BasicTemplateContext {
-    layout: &'static str,
-}
-
 pub fn routes() -> Vec<rocket::Route> {
-    routes![home::index, sign_up_show, sign_up]
+    routes![
+        home::index,
+        users::sign_up_show,
+        users::sign_up,
+    ]
 }
 
 mod home {
@@ -60,35 +42,59 @@ mod home {
     }
 }
 
-#[get("/sign_up")]
-fn sign_up_show() -> Template {
-    Template::render("sign_up", &BasicTemplateContext {
-        layout: "site",
-    })
-}
+mod users {
+    use crate::database;
+    use crate::models;
+    use crate::forms;
 
-#[post("/users", data = "<form>")]
-fn sign_up(
-    db_conn: database::DbConn,
-    form: Form<forms::UserSignUp>,
-) -> Result<Redirect, UserSignUpResponse>
-{
-    models::NewUser::from_form(form.0)?
-        .save(db_conn)?;
+    use rocket::response::Redirect;
+    use rocket::request::Form;
+    use rocket_contrib::templates::Template;
 
-    Ok(Redirect::to(uri!(home::index)))
-}
-
-impl From<validator::ValidationErrors> for UserSignUpResponse {
-    fn from(_validation_errors: validator::ValidationErrors) -> Self {
-        Self::InvalidForm(Template::render("sign_up", &BasicTemplateContext {
-            layout: "site",
-        }))
+    #[derive(Debug, rocket::response::Responder)]
+    #[response(content_type = "text/html")]
+    pub enum UserSignUpResponse {
+        #[response(status = 422)]
+        InvalidForm(Template),
+        #[response(status = 500)]
+        UnknownError(()),
     }
-}
 
-impl From<diesel::result::Error> for UserSignUpResponse {
-    fn from(_: diesel::result::Error) -> Self {
-        Self::UnknownError(())
+    #[derive(Serialize)]
+    struct BasicTemplateContext {
+        layout: &'static str,
+    }
+
+    #[get("/sign_up")]
+    pub fn sign_up_show() -> Template {
+        Template::render("sign_up", &BasicTemplateContext {
+            layout: "site",
+        })
+    }
+
+    #[post("/users", data = "<form>")]
+    pub fn sign_up(
+        db_conn: database::DbConn,
+        form: Form<forms::UserSignUp>,
+    ) -> Result<Redirect, UserSignUpResponse>
+    {
+        models::NewUser::from_form(form.0)?
+            .save(db_conn)?;
+
+        Ok(Redirect::to(uri!(super::home::index)))
+    }
+
+    impl From<validator::ValidationErrors> for UserSignUpResponse {
+        fn from(_validation_errors: validator::ValidationErrors) -> Self {
+            Self::InvalidForm(Template::render("sign_up", &BasicTemplateContext {
+                layout: "site",
+            }))
+        }
+    }
+
+    impl From<diesel::result::Error> for UserSignUpResponse {
+        fn from(_: diesel::result::Error) -> Self {
+            Self::UnknownError(())
+        }
     }
 }
