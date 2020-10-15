@@ -10,7 +10,7 @@ use validator::Validate;
 #[derive(Serialize)]
 struct TemplateContext {
     parent: &'static str,
-    users: Vec<models::User>,
+    users: Option<Vec<models::User>>,
 }
 
 pub fn routes() -> Vec<rocket::Route> {
@@ -23,7 +23,7 @@ fn index(db_conn: database::DbConn) -> Template {
 
     let template_context = TemplateContext {
         parent: "layout",
-        users: all_users,
+        users: Some(all_users),
     };
 
     Template::render("index", &template_context)
