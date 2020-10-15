@@ -20,7 +20,9 @@ pub struct NewUser<'a> {
 
 impl User {
     pub fn all(db_conn: DbConn) -> Result<Vec<User>, ()> {
-        match users::table.load::<User>(&*db_conn) {
+        let result = users::table.load::<User>(&*db_conn);
+
+        match result {
             Err(_) => Err(()),
             Ok(users) => Ok(users),
         }
@@ -29,7 +31,11 @@ impl User {
 
 impl<'a> NewUser<'a> {
     pub fn save(&self, db_conn: DbConn) -> Result<(), ()> {
-        match diesel::insert_into(users::table).values(self).get_result::<User>(&*db_conn) {
+        let result = diesel::insert_into(users::table)
+            .values(self)
+            .get_result::<User>(&*db_conn);
+
+        match result {
             Err(_) => Err(()),
             Ok(_) => Ok(()),
         }
