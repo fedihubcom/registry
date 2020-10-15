@@ -7,14 +7,14 @@ use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
 #[get("/sign_up")]
-pub fn sign_up_show() -> Template {
+pub fn show() -> Template {
     Template::render("sign_up", &BasicTemplateContext {
         layout: "site",
     })
 }
 
 #[post("/users", data = "<form>")]
-pub fn sign_up(
+pub fn create(
     db_conn: database::DbConn,
     form: Form<forms::UserSignUp>,
 ) -> Result<Redirect, UserSignUpResponse>
