@@ -47,7 +47,7 @@ impl Environment {
 
 impl Config {
     pub fn default() -> Result<Self, ()> {
-        let default_root = match current_dir() {
+        let default_root = match Self::default_root() {
             Err(_) => return Err(()),
             Ok(value) => value,
         };
@@ -67,6 +67,20 @@ impl Config {
         let mut result = Self::default()?;
         result.use_env();
         Ok(result)
+    }
+
+    pub fn default_root() -> Result<String, ()> {
+        let root_path_buf = match std::env::current_dir() {
+            Err(_) => return Err(()),
+            Ok(value) => value,
+        };
+
+        let root_str = match root_path_buf.to_str() {
+            None => return Err(()),
+            Some(value) => value,
+        };
+
+        Ok(root_str.to_string())
     }
 
     pub fn use_env(&mut self) {
@@ -152,18 +166,4 @@ impl Config {
                 },
         };
     }
-}
-
-fn current_dir() -> Result<String, ()> {
-    let root_path_buf = match std::env::current_dir() {
-        Err(_) => return Err(()),
-        Ok(value) => value,
-    };
-
-    let root_str = match root_path_buf.to_str() {
-        None => return Err(()),
-        Some(value) => value,
-    };
-
-    Ok(root_str.to_string())
 }
