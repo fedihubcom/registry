@@ -105,7 +105,7 @@ impl Config {
             .port(self.port)
     }
 
-    fn use_env_for_root(&mut self) {
+    pub fn use_env_for_root(&mut self) {
         self.root = match std::env::var("ROOT") {
             Err(_) => return,
             Ok(value) =>
@@ -118,7 +118,7 @@ impl Config {
         };
     }
 
-    fn use_env_for_environment(&mut self) {
+    pub fn use_env_for_environment(&mut self) {
         self.environment = match std::env::var("ENVIRONMENT") {
             Err(_) => return,
             Ok(value) =>
@@ -131,7 +131,7 @@ impl Config {
         };
     }
 
-    fn use_env_for_address(&mut self) {
+    pub fn use_env_for_address(&mut self) {
         self.address = match std::env::var("ADDRESS") {
             Err(_) => return,
             Ok(value) =>
@@ -144,7 +144,7 @@ impl Config {
         };
     }
 
-    fn use_env_for_port(&mut self) {
+    pub fn use_env_for_port(&mut self) {
         self.port = match std::env::var("PORT") {
             Err(_) => return,
             Ok(value) => match value.parse::<u16>() {
@@ -154,7 +154,7 @@ impl Config {
         };
     }
 
-    fn use_env_for_database_url(&mut self) {
+    pub fn use_env_for_database_url(&mut self) {
         self.database_url = match std::env::var("DATABASE_URL") {
             Err(_) => return,
             Ok(value) =>
