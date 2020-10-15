@@ -3,6 +3,7 @@ use crate::database::DbConn;
 use crate::schema::users;
 
 use diesel::prelude::*;
+use diesel::query_builder::AsQuery;
 
 #[derive(Debug, Serialize, Queryable)]
 pub struct User {
@@ -20,7 +21,13 @@ pub struct NewUser<'a> {
 
 impl User {
     pub fn all(db_conn: DbConn) -> Result<Vec<User>, ()> {
-        let result = users::table.load::<User>(&*db_conn);
+        let query = users::table.as_query();
+
+        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
+
+        println!("{}", debug);
+
+        let result = query.load::<User>(&*db_conn);
 
         match result {
             Err(_) => Err(()),
@@ -31,9 +38,13 @@ impl User {
 
 impl<'a> NewUser<'a> {
     pub fn save(&self, db_conn: DbConn) -> Result<(), ()> {
-        let result = diesel::insert_into(users::table)
-            .values(self)
-            .get_result::<User>(&*db_conn);
+        let query = diesel::insert_into(users::table).values(self);
+
+        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
+
+        println!("{}", debug);
+
+        let result = query.get_result::<User>(&*db_conn);
 
         match result {
             Err(_) => Err(()),
