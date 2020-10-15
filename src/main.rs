@@ -21,5 +21,5 @@ fn main() {
     let config = config::Config::from_env().unwrap();
     println!("Running with {:#?}", config);
     println!("Public path: {:#?}", config.public_path().unwrap());
-    web::rocket(config).launch();
+    web::rocket(config).unwrap().launch();
 }
