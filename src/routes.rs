@@ -17,15 +17,17 @@ pub fn routes() -> Vec<rocket::Route> {
 }
 
 #[get("/")]
-fn index(db_conn: database::DbConn) -> Template {
-    let all_users = models::User::all(db_conn).unwrap();
+fn index(db_conn: database::DbConn) -> Result<Template, Redirect> {
+    let all_users = models::User::all(db_conn)
+        .map_err(|_| Redirect::to(uri!(index)))?
+        ;
 
     let template_context = TemplateContext {
         layout: "site",
         users: Some(all_users),
     };
 
-    Template::render("index", &template_context)
+    Ok(Template::render("index", &template_context))
 }
 
 #[get("/sign_up")]
@@ -42,15 +44,13 @@ fn sign_up_show() -> Template {
 fn sign_up(
     db_conn: database::DbConn,
     user_sign_up_form: Form<forms::UserSignUp>,
-) -> Redirect
+) -> Result<Redirect, Redirect>
 {
-    match models::NewUser::from_form(user_sign_up_form.0) {
-        Err(_) => return Redirect::to(uri!(sign_up_show)),
-        Ok(new_user) => match new_user.save(db_conn) {
-            Err(_) => return Redirect::to(uri!(sign_up_show)),
-            Ok(_) => {},
-        },
-    }
+    models::NewUser::from_form(user_sign_up_form.0)
+        .map_err(|_| Redirect::to(uri!(sign_up_show)))?
+        .save(db_conn)
+        .map_err(|_| Redirect::to(uri!(sign_up_show)))?
+        ;
 
-    Redirect::to(uri!(index))
+    Ok(Redirect::to(uri!(index)))
 }
