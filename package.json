@@ -2,7 +2,7 @@
   "name": "fedihub-registry",
   "version": "0.0.0",
   "description": "User registry",
-  "main": "src/index.js",
+  "main": "src/assets/index.js",
   "repository": "https://github.com/fedihubcom/registry.git",
   "author": "Alex Kotov <kotovalexarian@gmail.com>",
   "license": "MIT",
