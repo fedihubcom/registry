@@ -6,7 +6,7 @@ use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
-#[get("/sign_up")]
+#[get("/users/new")]
 pub fn show() -> Template {
     Template::render("sign_up", &BasicTemplateContext {
         layout: "site",
