@@ -2,7 +2,7 @@ use crate::config;
 use crate::database;
 use crate::routes;
 
-use rocket_contrib::serve::StaticFiles;
+use rocket_contrib::serve::{Options as ServeOptions, StaticFiles};
 use rocket_contrib::templates::Template;
 
 pub fn rocket(config: config::Config) -> Result<rocket::Rocket, ()> {
@@ -14,7 +14,7 @@ pub fn rocket(config: config::Config) -> Result<rocket::Rocket, ()> {
         .manage(database::create_db_pool(config))
         .attach(Template::fairing())
         .mount("/", routes::routes())
-        .mount("/public", StaticFiles::from(public_path));
+        .mount("/public", StaticFiles::new(public_path, ServeOptions::None));
 
     Ok(result)
 }
