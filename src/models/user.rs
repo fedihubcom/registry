@@ -1,9 +1,11 @@
 use crate::database::DbConn;
+use crate::forms;
 
 use crate::schema::users;
 
 use diesel::prelude::*;
 use diesel::query_builder::AsQuery;
+use validator::{Validate, ValidationErrors};
 
 #[derive(Debug, Serialize, Queryable)]
 pub struct User {
@@ -14,9 +16,9 @@ pub struct User {
 
 #[derive(Debug, Insertable)]
 #[table_name="users"]
-pub struct NewUser<'a> {
-    pub username: &'a str,
-    pub encrypted_password: &'a str,
+pub struct NewUser {
+    pub username: String,
+    pub encrypted_password: String,
 }
 
 impl User {
@@ -36,7 +38,21 @@ impl User {
     }
 }
 
-impl<'a> NewUser<'a> {
+impl NewUser {
+    pub fn from_form(form: forms::UserSignUp) -> Result<Self, ValidationErrors> {
+        form.validate()?;
+
+        let encrypted_password = bcrypt::hash(
+            form.password.to_string(),
+            bcrypt::DEFAULT_COST,
+        ).unwrap();
+
+        Ok(Self {
+            username: form.username,
+            encrypted_password: encrypted_password,
+        })
+    }
+
     pub fn save(&self, db_conn: DbConn) -> Result<(), ()> {
         let query = diesel::insert_into(users::table).values(self);
 

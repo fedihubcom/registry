@@ -5,7 +5,6 @@ use crate::forms;
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
-use validator::Validate;
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -45,21 +44,13 @@ fn sign_up(
     user_sign_up_form: Form<forms::UserSignUp>,
 ) -> Redirect
 {
-    if let Err(_) = user_sign_up_form.validate() {
-        return Redirect::to(uri!(index));
+    match models::NewUser::from_form(user_sign_up_form.0) {
+        Err(_) => return Redirect::to(uri!(sign_up_show)),
+        Ok(new_user) => match new_user.save(db_conn) {
+            Err(_) => return Redirect::to(uri!(sign_up_show)),
+            Ok(_) => {},
+        },
     }
-
-    let encrypted_password = bcrypt::hash(
-        user_sign_up_form.password.to_string(),
-        bcrypt::DEFAULT_COST,
-    ).unwrap();
-
-    let new_user = models::NewUser {
-        username: user_sign_up_form.username.as_str(),
-        encrypted_password: encrypted_password.as_str(),
-    };
-
-    new_user.save(db_conn).unwrap();
 
     Redirect::to(uri!(index))
 }
