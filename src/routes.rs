@@ -5,6 +5,7 @@ use crate::forms;
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
+use validator::Validate;
 
 #[derive(Serialize)]
 struct TemplateContext {
@@ -34,7 +35,7 @@ fn sign_up(
     user_sign_up_form: Form<forms::UserSignUp>,
 ) -> Redirect
 {
-    if !user_sign_up_form.is_valid() {
+    if let Err(_) = user_sign_up_form.validate() {
         return Redirect::to(uri!(index));
     }
 

@@ -25,6 +25,8 @@ mod requests {
 mod forms {
     use crate::forms;
 
+    use validator::Validate;
+
     #[test]
     fn user_sign_up() {
         let form = forms::UserSignUp {
@@ -32,7 +34,7 @@ mod forms {
             password: "q1w2e3r4t5y6".to_string(),
         };
 
-        assert_eq!(form.is_valid(), true);
+        assert!(matches!(form.validate(), Ok(_)));
     }
 
     #[test]
@@ -42,7 +44,7 @@ mod forms {
             password: "q1w2e3r4t5y6".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 
     #[test]
@@ -52,7 +54,7 @@ mod forms {
             password: "q1w2e3r4t5y6".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 
     #[test]
@@ -62,7 +64,7 @@ mod forms {
             password: "q1w2e3r4t5y6".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 
     #[test]
@@ -72,7 +74,7 @@ mod forms {
             password: "".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 
     #[test]
@@ -82,7 +84,7 @@ mod forms {
             password: " ".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 
     #[test]
@@ -92,6 +94,6 @@ mod forms {
             password: "1234567".to_string(),
         };
 
-        assert_eq!(form.is_valid(), false);
+        assert!(matches!(form.validate(), Err(_)));
     }
 }
