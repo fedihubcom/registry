@@ -64,81 +64,17 @@ impl Config {
     }
 
     pub fn from_env() -> Result<Self, ()> {
-        let default_root = match current_dir() {
-            Err(_) => return Err(()),
-            Ok(value) => value,
-        };
+        let mut result = Self::default()?;
+        result.use_env();
+        Ok(result)
+    }
 
-        let root = match std::env::var("ROOT") {
-            Ok(value) =>
-                if value.is_empty() {
-                    default_root
-                }
-                else {
-                    value
-                },
-            Err(error) => match error {
-                std::env::VarError::NotPresent => default_root,
-                std::env::VarError::NotUnicode(_) => return Err(()),
-            },
-        };
-
-        let environment = match std::env::var("ENVIRONMENT") {
-            Ok(value) => Environment::from_string(value),
-            Err(error) => match error {
-                std::env::VarError::NotPresent => DEFAULT_ENVIRONMENT,
-                std::env::VarError::NotUnicode(_) => return Err(()),
-            },
-        };
-
-        let address = match std::env::var("ADDRESS") {
-            Ok(value) =>
-                if value.is_empty() {
-                    DEFAULT_ADDRESS.to_string()
-                }
-                else {
-                    value
-                },
-            Err(error) => match error {
-                std::env::VarError::NotPresent => DEFAULT_ADDRESS.to_string(),
-                std::env::VarError::NotUnicode(_) => return Err(()),
-            },
-        };
-
-        let port = match std::env::var("PORT") {
-            Ok(value) => match value.parse::<u16>() {
-                Ok(value) => value,
-                Err(_) => return Err(()),
-            },
-            Err(error) => match error {
-                std::env::VarError::NotPresent => DEFAULT_PORT,
-                std::env::VarError::NotUnicode(_) => return Err(()),
-            },
-        };
-
-        let database_url = match std::env::var("DATABASE_URL") {
-            Ok(value) =>
-                if value.is_empty() {
-                    DEFAULT_DATABASE_URL.to_string()
-                }
-                else {
-                    value
-                },
-            Err(error) => match error {
-                std::env::VarError::NotPresent => DEFAULT_DATABASE_URL.to_string(),
-                std::env::VarError::NotUnicode(_) => return Err(()),
-            },
-        };
-
-        Ok(
-            Config {
-                root,
-                environment,
-                address,
-                port,
-                database_url,
-            }
-         )
+    pub fn use_env(&mut self) {
+        self.use_env_for_root();
+        self.use_env_for_environment();
+        self.use_env_for_address();
+        self.use_env_for_port();
+        self.use_env_for_database_url();
     }
 
     pub fn to_rocket_config(&self) -> Result<RocketConfig, ()> {
@@ -153,6 +89,68 @@ impl Config {
             .root(self.root.to_string())
             .address(self.address.to_string())
             .port(self.port)
+    }
+
+    fn use_env_for_root(&mut self) {
+        self.root = match std::env::var("ROOT") {
+            Err(_) => return,
+            Ok(value) =>
+                if value.is_empty() {
+                    return
+                }
+                else {
+                    value
+                },
+        };
+    }
+
+    fn use_env_for_environment(&mut self) {
+        self.environment = match std::env::var("ENVIRONMENT") {
+            Err(_) => return,
+            Ok(value) =>
+                if value.is_empty() {
+                    return
+                }
+                else {
+                    Environment::from_string(value)
+                },
+        };
+    }
+
+    fn use_env_for_address(&mut self) {
+        self.address = match std::env::var("ADDRESS") {
+            Err(_) => return,
+            Ok(value) =>
+                if value.is_empty() {
+                    return
+                }
+                else {
+                    value
+                },
+        };
+    }
+
+    fn use_env_for_port(&mut self) {
+        self.port = match std::env::var("PORT") {
+            Err(_) => return,
+            Ok(value) => match value.parse::<u16>() {
+                Err(_) => return,
+                Ok(value) => value,
+            },
+        };
+    }
+
+    fn use_env_for_database_url(&mut self) {
+        self.database_url = match std::env::var("DATABASE_URL") {
+            Err(_) => return,
+            Ok(value) =>
+                if value.is_empty() {
+                    return
+                }
+                else {
+                    value
+                },
+        };
     }
 }
 
