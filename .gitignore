@@ -2,3 +2,4 @@
 /node_modules/
 /public/assets/
 /target/
+/yarn-error.log
