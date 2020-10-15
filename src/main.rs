@@ -1,6 +1,9 @@
 #![feature(decl_macro, proc_macro_hygiene)]
 
+#[cfg(test)] mod tests;
+
 pub mod config;
+mod web;
 mod database;
 mod routes;
 mod schema;
@@ -13,17 +16,7 @@ mod forms;
 
 extern crate rocket_contrib;
 
-use rocket_contrib::templates::Template;
-
 fn main() {
     let config = config::Config::default().unwrap();
-
-    rocket(config).launch();
-}
-
-fn rocket(config: config::Config) -> rocket::Rocket {
-    rocket::custom(config.to_rocket_config().unwrap())
-        .manage(database::create_db_pool(config))
-        .attach(Template::fairing())
-        .mount("/", routes::routes())
+    web::rocket(config).launch();
 }
