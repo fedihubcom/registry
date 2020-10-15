@@ -360,6 +360,7 @@ dependencies = [
  "bcrypt",
  "diesel",
  "r2d2",
+ "regex",
  "rocket",
  "rocket_contrib",
  "serde",

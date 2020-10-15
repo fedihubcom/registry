@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod test {
+mod requests {
     use crate::config;
     use crate::web;
 
@@ -18,5 +18,80 @@ mod test {
         let response = client.get("/").dispatch();
 
         assert_eq!(response.status(), Status::Ok);
+    }
+}
+
+#[cfg(test)]
+mod forms {
+    use crate::forms;
+
+    #[test]
+    fn user_sign_up() {
+        let form = forms::UserSignUp {
+            username: "kotovalexarian".to_string(),
+            password: "q1w2e3r4t5y6".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), true);
+    }
+
+    #[test]
+    fn user_sign_up_with_empty_username() {
+        let form = forms::UserSignUp {
+            username: "".to_string(),
+            password: "q1w2e3r4t5y6".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
+    }
+
+    #[test]
+    fn user_sign_up_with_blank_username() {
+        let form = forms::UserSignUp {
+            username: " ".to_string(),
+            password: "q1w2e3r4t5y6".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
+    }
+
+    #[test]
+    fn user_sign_up_with_too_short_username() {
+        let form = forms::UserSignUp {
+            username: "foo".to_string(),
+            password: "q1w2e3r4t5y6".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
+    }
+
+    #[test]
+    fn user_sign_up_with_empty_password() {
+        let form = forms::UserSignUp {
+            username: "kotovalexarian".to_string(),
+            password: "".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
+    }
+
+    #[test]
+    fn user_sign_up_with_blank_password() {
+        let form = forms::UserSignUp {
+            username: "kotovalexarian".to_string(),
+            password: " ".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
+    }
+
+    #[test]
+    fn user_sign_up_with_too_short_password() {
+        let form = forms::UserSignUp {
+            username: "kotovalexarian".to_string(),
+            password: "1234567".to_string(),
+        };
+
+        assert_eq!(form.is_valid(), false);
     }
 }
