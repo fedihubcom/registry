@@ -8,7 +8,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/users/new")]
 pub fn show() -> Template {
-    Template::render("sign_up", &BasicTemplateContext {
+    Template::render("users/new", &BasicTemplateContext {
         layout: "site",
     })
 }
@@ -41,7 +41,7 @@ struct BasicTemplateContext {
 
 impl From<validator::ValidationErrors> for UserSignUpResponse {
     fn from(_validation_errors: validator::ValidationErrors) -> Self {
-        Self::InvalidForm(Template::render("sign_up", &BasicTemplateContext {
+        Self::InvalidForm(Template::render("users/new", &BasicTemplateContext {
             layout: "site",
         }))
     }

@@ -7,7 +7,7 @@ use rocket_contrib::templates::Template;
 pub fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
     let all_users = models::User::all(db_conn)?;
 
-    Ok(Template::render("index", &IndexTemplateContext {
+    Ok(Template::render("home/index", &IndexTemplateContext {
         layout: "site",
         users: all_users,
     }))
