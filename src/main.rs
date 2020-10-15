@@ -17,6 +17,7 @@ mod forms;
 extern crate rocket_contrib;
 
 fn main() {
-    let config = config::Config::default().unwrap();
+    dotenv::dotenv().unwrap();
+    let config = config::Config::from_env().unwrap();
     web::rocket(config).launch();
 }
