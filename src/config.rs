@@ -24,6 +24,7 @@ pub struct Config {
     pub address: String,
     pub port: u16,
     pub database_url: String,
+    pub secret_key: Option<String>,
 }
 
 impl Environment {
@@ -59,6 +60,7 @@ impl Config {
                 address: DEFAULT_ADDRESS.to_string(),
                 port: DEFAULT_PORT,
                 database_url: DEFAULT_DATABASE_URL.to_string(),
+                secret_key: None,
             }
          )
     }
@@ -89,6 +91,7 @@ impl Config {
         self.use_env_for_address();
         self.use_env_for_port();
         self.use_env_for_database_url();
+        self.use_env_for_secret_key();
     }
 
     pub fn to_rocket_config(&self) -> Result<RocketConfig, ()> {
@@ -99,10 +102,17 @@ impl Config {
     }
 
     pub fn to_rocket_config_builder(&self) -> RocketConfigBuilder {
-        RocketConfig::build(self.environment.to_rocket_environment())
+        let mut value =
+            RocketConfig::build(self.environment.to_rocket_environment())
             .root(self.root.to_string())
             .address(self.address.to_string())
-            .port(self.port)
+            .port(self.port);
+
+        if let Some(secret_key) = &self.secret_key {
+            value = value.secret_key(secret_key);
+        }
+
+        value
     }
 
     pub fn public_path(&self) -> Result<String, ()> {
@@ -178,5 +188,18 @@ impl Config {
                     value
                 },
         };
+    }
+
+    pub fn use_env_for_secret_key(&mut self) {
+        self.secret_key = match std::env::var("SECRET_KEY") {
+            Err(_) => return,
+            Ok(value) =>
+                if value.is_empty() {
+                    return
+                }
+                else {
+                    Some(value)
+                },
+        }
     }
 }
