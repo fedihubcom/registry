@@ -40,13 +40,13 @@ fn sign_up_show() -> Template {
     Template::render("sign_up", &template_context)
 }
 
-#[post("/users", data = "<user_sign_up_form>")]
+#[post("/users", data = "<form>")]
 fn sign_up(
     db_conn: database::DbConn,
-    user_sign_up_form: Form<forms::UserSignUp>,
+    form: Form<forms::UserSignUp>,
 ) -> Result<Redirect, Redirect>
 {
-    models::NewUser::from_form(user_sign_up_form.0)
+    models::NewUser::from_form(form.0)
         .map_err(|_| Redirect::to(uri!(sign_up_show)))?
         .save(db_conn)
         .map_err(|_| Redirect::to(uri!(sign_up_show)))?
