@@ -62,9 +62,23 @@ impl Config {
     }
 
     pub fn from_env() -> Result<Self, ()> {
-        let root = match current_dir() {
+        let default_root = match current_dir() {
             Err(_) => return Err(()),
             Ok(value) => value,
+        };
+
+        let root = match std::env::var("ROOT") {
+            Ok(value) =>
+                if value.is_empty() {
+                    default_root
+                }
+                else {
+                    value
+                },
+            Err(error) => match error {
+                std::env::VarError::NotPresent => default_root,
+                std::env::VarError::NotUnicode(_) => return Err(()),
+            },
         };
 
         let environment = match std::env::var("ENVIRONMENT") {
