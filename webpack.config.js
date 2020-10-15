@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 module.exports = {
   entry: [
     './src/assets/index.js',
-    './src/assets/index.css',
+    './src/assets/index.scss',
   ],
   output: {
     path: path.resolve(__dirname, 'public/assets'),
@@ -19,10 +19,11 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.css$/,
+        test: /\.scss$/,
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
+          'sass-loader',
         ],
       },
     ],
