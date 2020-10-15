@@ -22,19 +22,14 @@ pub struct NewUser {
 }
 
 impl User {
-    pub fn all(db_conn: DbConn) -> Result<Vec<Self>, ()> {
+    pub fn all(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
         let query = users::table.as_query();
 
         let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
 
         println!("{}", debug);
 
-        let result = query.load::<Self>(&*db_conn);
-
-        match result {
-            Err(_) => Err(()),
-            Ok(users) => Ok(users),
-        }
+        query.load::<Self>(&*db_conn)
     }
 }
 
@@ -53,18 +48,15 @@ impl NewUser {
         })
     }
 
-    pub fn save(&self, db_conn: DbConn) -> Result<(), ()> {
+    pub fn save(&self, db_conn: DbConn) -> Result<(), diesel::result::Error> {
         let query = diesel::insert_into(users::table).values(self);
 
         let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
 
         println!("{}", debug);
 
-        let result = query.get_result::<User>(&*db_conn);
+        query.get_result::<User>(&*db_conn)?;
 
-        match result {
-            Err(_) => Err(()),
-            Ok(_) => Ok(()),
-        }
+        Ok(())
     }
 }

@@ -70,8 +70,8 @@ fn sign_up(
     Ok(Redirect::to(uri!(index)))
 }
 
-impl From<()> for IndexResponse {
-    fn from(_: ()) -> Self {
+impl From<diesel::result::Error> for IndexResponse {
+    fn from(_: diesel::result::Error) -> Self {
         Self::UnknownError(())
     }
 }
@@ -86,8 +86,8 @@ impl From<validator::ValidationErrors> for UserSignUpResponse {
     }
 }
 
-impl From<()> for UserSignUpResponse {
-    fn from(_: ()) -> Self {
+impl From<diesel::result::Error> for UserSignUpResponse {
+    fn from(_: diesel::result::Error) -> Self {
         Self::UnknownError(())
     }
 }
