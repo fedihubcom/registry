@@ -1,3 +1,4 @@
+use crate::csrf;
 use crate::config;
 use crate::database;
 use crate::routes;
@@ -10,10 +11,9 @@ pub fn rocket(config: &config::Config) -> Result<rocket::Rocket, ()> {
 
     let public_path = config.public_path()?;
 
-    let secret_key = config.secret_key.as_ref().unwrap().to_string();
-
     let result = rocket::custom(rocket_config)
         .manage(database::create_db_pool(config))
+        .attach(csrf::Fairing::new())
         .attach(Template::fairing())
         .mount("/", routes::routes())
         .mount("/", StaticFiles::new(public_path, ServeOptions::None));

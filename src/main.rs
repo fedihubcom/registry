@@ -2,6 +2,7 @@
 
 #[cfg(test)] mod tests;
 
+mod csrf;
 mod config;
 mod web;
 mod database;
