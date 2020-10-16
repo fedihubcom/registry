@@ -1,5 +1,11 @@
 use validator::{Validate, ValidationError};
 
+#[derive(FromForm)]
+pub struct UserSignIn {
+    pub username: String,
+    pub password: String,
+}
+
 #[derive(FromForm, Validate)]
 pub struct UserSignUp {
     #[validate(length(min = 4, max = 128), custom = "validate_username")]

@@ -22,8 +22,22 @@ pub struct NewUser {
 }
 
 impl User {
-    pub fn find(db_conn: DbConn, id: i32) -> Result<Self, diesel::result::Error> {
+    pub fn find(db_conn: DbConn, id: i32)
+        -> Result<Self, diesel::result::Error>
+    {
         let query = users::table.find(id);
+
+        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
+
+        println!("{}", debug);
+
+        query.first::<Self>(&*db_conn)
+    }
+
+    pub fn by_username(db_conn: DbConn, username: String)
+        -> Result<Self, diesel::result::Error>
+    {
+        let query = users::table.filter(users::username.eq(username));
 
         let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
 
@@ -40,6 +54,13 @@ impl User {
         println!("{}", debug);
 
         query.load::<Self>(&*db_conn)
+    }
+
+    pub fn authorize(self, password: &String) -> bool {
+        match bcrypt::verify(password, self.encrypted_password.as_str()) {
+            Err(_) => false,
+            Ok(value) => value,
+        }
     }
 }
 

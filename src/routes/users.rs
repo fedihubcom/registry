@@ -25,8 +25,7 @@ pub fn create(
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
-) -> Result<Redirect, UserSignUpResponse>
-{
+) -> Result<Redirect, UserSignUpResponse> {
     if let Some(_) = current_user.0 {
         return Err(UserSignUpResponse::AlreadySignedIn(
             Redirect::to(uri!(super::home::index))
