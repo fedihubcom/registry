@@ -1,7 +1,7 @@
 use rand::RngCore;
 use rocket::{Data, Request};
 use rocket::fairing::{Fairing as RocketFairing, Info, Kind};
-use rocket::http::{Cookie, Status};
+use rocket::http::{Cookie, Method, Status};
 use rocket::request::{FromRequest, Outcome};
 
 const COOKIE_NAME: &str = "csrf_token";
@@ -13,7 +13,7 @@ const RAW_TOKEN_LENGTH: usize = 32;
 
 pub struct Fairing;
 
-pub struct Guard(Vec<u8>);
+pub struct Guard;
 
 impl Fairing {
     pub fn new() -> Self {
@@ -45,9 +45,11 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
-        match request.valid_csrf_token_from_session() {
-            None => Outcome::Failure((Status::Forbidden, ())),
-            Some(old_raw) => Outcome::Success(Self(old_raw)),
+        if request.is_verified_against_csrf() {
+            Outcome::Success(Self {})
+        }
+        else {
+            Outcome::Failure((Status::Forbidden, ()))
         }
     }
 }
@@ -65,6 +67,15 @@ trait RequestCsrf {
     fn csrf_token_from_header(&self) -> Option<String>;
 
     fn csrf_token_from_form(&self) -> Option<String>;
+
+    fn is_verified_against_csrf(&self) -> bool;
+
+    fn is_authenticity_token_valid(&self, token: String) -> bool {
+        match self.valid_csrf_token_from_session() {
+            None => false,
+            Some(session_token) => false,
+        }
+    }
 }
 
 impl RequestCsrf for Request<'_> {
@@ -79,5 +90,16 @@ impl RequestCsrf for Request<'_> {
 
     fn csrf_token_from_form(&self) -> Option<String> {
         self.get_query_value(PARAM_NAME).and_then(|s| s.ok())
+    }
+
+    fn is_verified_against_csrf(&self) -> bool {
+        self.method() == Method::Get ||
+            self.method() == Method::Head ||
+            self.csrf_token_from_header().and_then(
+                |token| Some(self.is_authenticity_token_valid(token))
+            ).unwrap_or(false) ||
+            self.csrf_token_from_form().and_then(
+                |token| Some(self.is_authenticity_token_valid(token))
+            ).unwrap_or(false)
     }
 }
