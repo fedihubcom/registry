@@ -73,7 +73,10 @@ trait RequestCsrf {
     fn is_authenticity_token_valid(&self, token: String) -> bool {
         match self.valid_csrf_token_from_session() {
             None => false,
-            Some(session_token) => false,
+            Some(session_token) => match base64::decode(token) {
+                Err(_) => false,
+                Ok(token) => token == session_token,
+            },
         }
     }
 }
