@@ -3,6 +3,7 @@ use crate::states;
 use crate::models;
 use crate::forms;
 
+use rocket::http::{Cookie, Cookies};
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
@@ -23,6 +24,7 @@ pub fn new(
 #[post("/sign_in", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
+    mut cookies: Cookies,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignIn>,
 ) -> Result<Redirect, UserSignInResponse> {
@@ -41,6 +43,8 @@ pub fn create(
             })
         ));
     }
+
+    cookies.add_private(Cookie::new("user_id", user.id.to_string()));
 
     Ok(Redirect::to(uri!(super::home::index)))
 }

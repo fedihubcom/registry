@@ -56,7 +56,7 @@ impl User {
         query.load::<Self>(&*db_conn)
     }
 
-    pub fn authorize(self, password: &String) -> bool {
+    pub fn authorize(&self, password: &String) -> bool {
         match bcrypt::verify(password, self.encrypted_password.as_str()) {
             Err(_) => false,
             Ok(value) => value,
@@ -79,15 +79,13 @@ impl NewUser {
         })
     }
 
-    pub fn save(&self, db_conn: DbConn) -> Result<(), diesel::result::Error> {
+    pub fn save(&self, db_conn: DbConn) -> Result<User, diesel::result::Error> {
         let query = diesel::insert_into(users::table).values(self);
 
         let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
 
         println!("{}", debug);
 
-        query.get_result::<User>(&*db_conn)?;
-
-        Ok(())
+        Ok(query.get_result::<User>(&*db_conn)?)
     }
 }
