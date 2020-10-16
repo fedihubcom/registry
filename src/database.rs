@@ -34,8 +34,9 @@ impl Deref for DbConn {
     }
 }
 
-pub fn create_db_pool(config: Config) -> DbPool {
-    let manager = ConnectionManager::<PgConnection>::new(config.database_url);
+pub fn create_db_pool(config: &Config) -> DbPool {
+    let manager =
+        ConnectionManager::<PgConnection>::new(config.database_url.to_string());
 
     DbPool(Pool::new(manager).expect("Failed to create database pool"))
 }

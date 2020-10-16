@@ -2,7 +2,8 @@
 
 #[cfg(test)] mod tests;
 
-pub mod config;
+mod csrf;
+mod config;
 mod web;
 mod database;
 mod states;
@@ -22,5 +23,5 @@ fn main() {
     let config = config::Config::from_env().unwrap();
     println!("Running with {:#?}", config);
     println!("Public path: {:#?}", config.public_path().unwrap());
-    web::rocket(config).unwrap().launch();
+    web::rocket(&config).unwrap().launch();
 }
