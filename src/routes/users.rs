@@ -7,7 +7,7 @@ use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
-#[get("/users/new")]
+#[get("/sign_up")]
 pub fn show(
     current_user: states::CurrentUser,
 ) -> Result<Template, Redirect> {
@@ -20,7 +20,7 @@ pub fn show(
     }))
 }
 
-#[post("/users", data = "<form>")]
+#[post("/sign_up", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
     current_user: states::CurrentUser,
