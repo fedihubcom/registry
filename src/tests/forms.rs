@@ -9,6 +9,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: "kotovalexarian".to_string(),
             password: "q1w2e3r4t5y6".to_string(),
+            password_confirmation: "q1w2e3r4t5y6".to_string(),
         };
 
         assert!(matches!(form.validate(), Ok(_)));
@@ -19,6 +20,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: "".to_string(),
             password: "q1w2e3r4t5y6".to_string(),
+            password_confirmation: "q1w2e3r4t5y6".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));
@@ -29,6 +31,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: " ".to_string(),
             password: "q1w2e3r4t5y6".to_string(),
+            password_confirmation: "q1w2e3r4t5y6".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));
@@ -39,6 +42,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: "foo".to_string(),
             password: "q1w2e3r4t5y6".to_string(),
+            password_confirmation: "q1w2e3r4t5y6".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));
@@ -49,6 +53,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: "kotovalexarian".to_string(),
             password: "".to_string(),
+            password_confirmation: "".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));
@@ -59,6 +64,7 @@ mod forms {
         let form = forms::UserSignUp {
             username: "kotovalexarian".to_string(),
             password: " ".to_string(),
+            password_confirmation: " ".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));
@@ -69,6 +75,18 @@ mod forms {
         let form = forms::UserSignUp {
             username: "kotovalexarian".to_string(),
             password: "1234567".to_string(),
+            password_confirmation: "1234567".to_string(),
+        };
+
+        assert!(matches!(form.validate(), Err(_)));
+    }
+
+    #[test]
+    fn user_sign_up_with_invalid_password_confirmation() {
+        let form = forms::UserSignUp {
+            username: "kotovalexarian".to_string(),
+            password: "q1w2e3r4t5y6".to_string(),
+            password_confirmation: "q1w2e3r4t5y6aaa".to_string(),
         };
 
         assert!(matches!(form.validate(), Err(_)));

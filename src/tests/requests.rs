@@ -8,7 +8,7 @@ mod requests {
 
     fn client() -> Client {
         let config = config::Config::default().unwrap();
-        let rocket = web::rocket(config);
+        let rocket = web::rocket(config).unwrap();
         Client::new(rocket).unwrap()
     }
 

@@ -12,6 +12,8 @@ pub struct UserSignUp {
     pub username: String,
     #[validate(length(min = 8, max = 128), custom = "validate_password")]
     pub password: String,
+    #[validate(must_match = "password")]
+    pub password_confirmation: String,
 }
 
 fn validate_username(value: &String) -> Result<(), ValidationError> {
