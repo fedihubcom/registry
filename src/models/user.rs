@@ -22,6 +22,16 @@ pub struct NewUser {
 }
 
 impl User {
+    pub fn find(db_conn: DbConn, id: i32) -> Result<Self, diesel::result::Error> {
+        let query = users::table.find(id);
+
+        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
+
+        println!("{}", debug);
+
+        query.first::<Self>(&*db_conn)
+    }
+
     pub fn all(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
         let query = users::table.as_query();
 

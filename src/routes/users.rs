@@ -1,4 +1,5 @@
 use crate::database;
+use crate::states;
 use crate::models;
 use crate::forms;
 
@@ -7,18 +8,31 @@ use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
 #[get("/users/new")]
-pub fn show() -> Template {
-    Template::render("users/new", &BasicTemplateContext {
+pub fn show(
+    current_user: states::CurrentUser,
+) -> Result<Template, Redirect> {
+    if let Some(_) = current_user.0 {
+        return Err(Redirect::to(uri!(super::home::index)));
+    }
+
+    Ok(Template::render("users/new", &BasicTemplateContext {
         layout: "site",
-    })
+    }))
 }
 
 #[post("/users", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
+    current_user: states::CurrentUser,
     form: Form<forms::UserSignUp>,
 ) -> Result<Redirect, UserSignUpResponse>
 {
+    if let Some(_) = current_user.0 {
+        return Err(UserSignUpResponse::AlreadySignedIn(
+            Redirect::to(uri!(super::home::index))
+        ));
+    }
+
     models::NewUser::from_form(form.0)?
         .save(db_conn)?;
 
@@ -28,6 +42,7 @@ pub fn create(
 #[derive(Debug, rocket::response::Responder)]
 #[response(content_type = "text/html")]
 pub enum UserSignUpResponse {
+    AlreadySignedIn(Redirect),
     #[response(status = 422)]
     InvalidForm(Template),
     #[response(status = 500)]

@@ -5,6 +5,7 @@
 pub mod config;
 mod web;
 mod database;
+mod states;
 mod routes;
 mod schema;
 mod models;

@@ -1,14 +1,19 @@
 use crate::database;
+use crate::states;
 use crate::models;
 
 use rocket_contrib::templates::Template;
 
 #[get("/")]
-pub fn index(db_conn: database::DbConn) -> Result<Template, IndexResponse> {
+pub fn index(
+    db_conn: database::DbConn,
+    current_user: states::CurrentUser,
+) -> Result<Template, IndexResponse> {
     let all_users = models::User::all(db_conn)?;
 
     Ok(Template::render("home/index", &IndexTemplateContext {
         layout: "site",
+        current_user: current_user.0,
         users: all_users,
     }))
 }
@@ -23,6 +28,7 @@ pub enum IndexResponse {
 #[derive(Serialize)]
 struct IndexTemplateContext {
     layout: &'static str,
+    current_user: Option<models::User>,
     users: Vec<models::User>,
 }
 
