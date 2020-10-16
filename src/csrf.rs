@@ -30,7 +30,7 @@ impl RocketFairing for Fairing {
     }
 
     fn on_request(&self, request: &mut Request, _: &Data) {
-        if let Some(_) = valid_raw_from_request(request) { return }
+        if let Some(_) = request.valid_csrf_token_from_session() { return }
 
         let mut raw = [0u8; RAW_TOKEN_LENGTH];
         rand::thread_rng().fill_bytes(&mut raw);
@@ -45,17 +45,23 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
-        match valid_raw_from_request(request) {
+        match request.valid_csrf_token_from_session() {
             None => Outcome::Failure((Status::Forbidden, ())),
             Some(old_raw) => Outcome::Success(Self(old_raw)),
         }
     }
 }
 
-fn valid_raw_from_request(request: &Request) -> Option<Vec<u8>> {
-    request.cookies().get_private(COOKIE_NAME)
-        .and_then(|cookie| base64::decode(cookie.value()).ok())
-        .and_then(|raw|
-            if raw.len() >= RAW_TOKEN_LENGTH { Some(raw) } else { None }
-        )
+trait RequestCsrf {
+    fn valid_csrf_token_from_session(&self) -> Option<Vec<u8>>;
+}
+
+impl RequestCsrf for Request<'_> {
+    fn valid_csrf_token_from_session(&self) -> Option<Vec<u8>> {
+        self.cookies().get_private(COOKIE_NAME)
+            .and_then(|cookie| base64::decode(cookie.value()).ok())
+            .and_then(|raw|
+                if raw.len() >= RAW_TOKEN_LENGTH { Some(raw) } else { None }
+            )
+    }
 }
