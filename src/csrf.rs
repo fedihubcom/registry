@@ -53,15 +53,19 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
 }
 
 trait RequestCsrf {
-    fn valid_csrf_token_from_session(&self) -> Option<Vec<u8>>;
-}
+    fn csrf_token_from_session(&self) -> Option<Vec<u8>>;
 
-impl RequestCsrf for Request<'_> {
     fn valid_csrf_token_from_session(&self) -> Option<Vec<u8>> {
-        self.cookies().get_private(COOKIE_NAME)
-            .and_then(|cookie| base64::decode(cookie.value()).ok())
+        self.csrf_token_from_session()
             .and_then(|raw|
                 if raw.len() >= RAW_TOKEN_LENGTH { Some(raw) } else { None }
             )
+    }
+}
+
+impl RequestCsrf for Request<'_> {
+    fn csrf_token_from_session(&self) -> Option<Vec<u8>> {
+        self.cookies().get_private(COOKIE_NAME)
+            .and_then(|cookie| base64::decode(cookie.value()).ok())
     }
 }
