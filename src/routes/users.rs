@@ -26,7 +26,7 @@ pub fn new(
 
 #[post("/sign_up", data = "<form>")]
 pub fn create(
-    _csrf: csrf::Guard,
+    csrf: csrf::Guard,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
@@ -38,7 +38,8 @@ pub fn create(
         ));
     }
 
-    let user = models::NewUser::from_form(form.0)?
+    let user = XXXXX { form: form.0, csrf_token: csrf.0 }
+        .validate()?
         .save(db_conn)?;
 
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
@@ -62,9 +63,30 @@ struct BasicTemplateContext {
     layout: &'static str,
 }
 
-impl From<validator::ValidationErrors> for UserSignUpResponse {
-    fn from(_validation_errors: validator::ValidationErrors) -> Self {
+struct XXXXX {
+    form: forms::UserSignUp,
+    csrf_token: String,
+}
+
+struct YYYYY {
+    csrf_token: String,
+}
+
+impl XXXXX {
+    fn validate(&self) -> Result<models::NewUser, YYYYY> {
+        match models::NewUser::from_form(&self.form) {
+            Ok(user) => Ok(user),
+            Err(_) => Err(YYYYY {
+                csrf_token: self.csrf_token.to_string(),
+            }),
+        }
+    }
+}
+
+impl From<YYYYY> for UserSignUpResponse {
+    fn from(yyyyy: YYYYY) -> Self {
         Self::InvalidForm(Template::render("users/new", &BasicTemplateContext {
+            csrf_token: yyyyy.csrf_token,
             layout: "site",
         }))
     }

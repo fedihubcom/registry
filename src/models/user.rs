@@ -65,7 +65,7 @@ impl User {
 }
 
 impl NewUser {
-    pub fn from_form(form: forms::UserSignUp) -> Result<Self, ValidationErrors> {
+    pub fn from_form(form: &forms::UserSignUp) -> Result<Self, ValidationErrors> {
         form.validate()?;
 
         let encrypted_password = bcrypt::hash(
@@ -74,8 +74,8 @@ impl NewUser {
         ).unwrap();
 
         Ok(Self {
-            username: form.username,
-            encrypted_password: encrypted_password,
+            username: form.username.to_string(),
+            encrypted_password: encrypted_password.to_string(),
         })
     }
 
