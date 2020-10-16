@@ -7,6 +7,7 @@ pub fn routes() -> Vec<rocket::Route> {
         home::index,
         sessions::new,
         sessions::create,
+        sessions::delete,
         users::new,
         users::create,
     ]

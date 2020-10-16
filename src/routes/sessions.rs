@@ -49,6 +49,20 @@ pub fn create(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
+#[delete("/sign_in")]
+pub fn delete(
+    mut cookies: Cookies,
+    current_user: states::MaybeCurrentUser,
+) -> Result<Redirect, Redirect> {
+    if let None = current_user.0 {
+        return Err(Redirect::to(uri!(super::home::index)));
+    }
+
+    cookies.remove_private(Cookie::named("user_id"));
+
+    Ok(Redirect::to(uri!(super::home::index)))
+}
+
 #[derive(Debug, rocket::response::Responder)]
 #[response(content_type = "text/html")]
 pub enum UserSignInResponse {
