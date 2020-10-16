@@ -5,7 +5,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/sign_in")]
 pub fn new(
-    current_user: states::CurrentUser,
+    current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
         return Err(Redirect::to(uri!(super::home::index)));

@@ -7,7 +7,7 @@ use rocket_contrib::templates::Template;
 #[get("/")]
 pub fn index(
     db_conn: database::DbConn,
-    current_user: states::CurrentUser,
+    current_user: states::MaybeCurrentUser,
 ) -> Result<Template, IndexResponse> {
     let all_users = models::User::all(db_conn)?;
 

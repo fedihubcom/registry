@@ -3,11 +3,11 @@ use crate::models;
 
 use rocket::request::{FromRequest, Outcome, Request};
 
-pub struct CurrentUser(pub Option<models::User>);
+pub struct MaybeCurrentUser(pub Option<models::User>);
 
 impl<'current_user, 'request>
     FromRequest<'current_user, 'request>
-    for CurrentUser
+    for MaybeCurrentUser
 {
     type Error = ();
 
@@ -22,6 +22,6 @@ impl<'current_user, 'request>
             .and_then(|cookie| cookie.value().parse::<i32>().ok())
             .and_then(|user_id| models::User::find(db_conn, user_id).ok());
 
-        Outcome::Success(CurrentUser(user))
+        Outcome::Success(MaybeCurrentUser(user))
     }
 }

@@ -9,7 +9,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/sign_up")]
 pub fn new(
-    current_user: states::CurrentUser,
+    current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
         return Err(Redirect::to(uri!(super::home::index)));
@@ -23,7 +23,7 @@ pub fn new(
 #[post("/sign_up", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
-    current_user: states::CurrentUser,
+    current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
 ) -> Result<Redirect, UserSignUpResponse>
 {
