@@ -32,6 +32,8 @@ pub fn create(
     form: Form<forms::UserSignUp>,
     mut cookies: Cookies,
 ) -> Result<Redirect, UserSignUpResponse> {
+    csrf.verify(&form.authenticity_token)?;
+
     if let Some(_) = current_user.0 {
         return Err(UserSignUpResponse::AlreadySignedIn(
             Redirect::to(uri!(super::home::index))
@@ -51,6 +53,8 @@ pub fn create(
 #[response(content_type = "text/html")]
 pub enum UserSignUpResponse {
     AlreadySignedIn(Redirect),
+    #[response(status = 403)]
+    InvalidAuthenticityToken(()),
     #[response(status = 422)]
     InvalidForm(Template),
     #[response(status = 500)]
@@ -95,5 +99,11 @@ impl From<YYYYY> for UserSignUpResponse {
 impl From<diesel::result::Error> for UserSignUpResponse {
     fn from(_: diesel::result::Error) -> Self {
         Self::UnknownError(())
+    }
+}
+
+impl From<csrf::VerificationFailure> for UserSignUpResponse {
+    fn from(_: csrf::VerificationFailure) -> Self {
+        Self::InvalidAuthenticityToken(())
     }
 }

@@ -32,6 +32,8 @@ pub fn create(
     form: Form<forms::UserSignIn>,
     mut cookies: Cookies,
 ) -> Result<Redirect, UserSignInResponse> {
+    csrf.verify(&form.authenticity_token)?;
+
     if let Some(_) = current_user.0 {
         return Err(UserSignInResponse::AlreadySignedIn(
             Redirect::to(uri!(super::home::index))
@@ -54,15 +56,19 @@ pub fn create(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[delete("/sign_out", data = "<_form>")]
+#[delete("/sign_out", data = "<form>")]
 pub fn delete(
-    _csrf: csrf::Guard,
+    csrf: csrf::Guard,
     current_user: states::MaybeCurrentUser,
-    _form: Form<forms::UserSignOut>,
+    form: Form<forms::UserSignOut>,
     mut cookies: Cookies,
-) -> Result<Redirect, Redirect> {
+) -> Result<Redirect, UserSignOutResponse> {
+    csrf.verify(&form.authenticity_token)?;
+
     if let None = current_user.0 {
-        return Err(Redirect::to(uri!(super::home::index)));
+        return Err(UserSignOutResponse::NoUserSignedIn(
+            Redirect::to(uri!(super::home::index))
+        ));
     }
 
     cookies.remove_private(Cookie::named("user_id"));
@@ -74,10 +80,20 @@ pub fn delete(
 #[response(content_type = "text/html")]
 pub enum UserSignInResponse {
     AlreadySignedIn(Redirect),
+    #[response(status = 403)]
+    InvalidAuthenticityToken(()),
     #[response(status = 422)]
     InvalidCredentials(Template),
     #[response(status = 500)]
     UnknownError(()),
+}
+
+#[derive(Debug, rocket::response::Responder)]
+#[response(context_type = "text/html")]
+pub enum UserSignOutResponse {
+    NoUserSignedIn(Redirect),
+    #[response(status = 403)]
+    InvalidAuthenticityToken(()),
 }
 
 #[derive(Serialize)]
@@ -89,5 +105,17 @@ struct BasicTemplateContext {
 impl From<diesel::result::Error> for UserSignInResponse {
     fn from(_: diesel::result::Error) -> Self {
         Self::UnknownError(())
+    }
+}
+
+impl From<csrf::VerificationFailure> for UserSignInResponse {
+    fn from(_: csrf::VerificationFailure) -> UserSignInResponse {
+        Self::InvalidAuthenticityToken(())
+    }
+}
+
+impl From<csrf::VerificationFailure> for UserSignOutResponse {
+    fn from(_: csrf::VerificationFailure) -> UserSignOutResponse {
+        Self::InvalidAuthenticityToken(())
     }
 }

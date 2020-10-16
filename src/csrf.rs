@@ -15,9 +15,24 @@ pub struct Fairing;
 
 pub struct Guard(pub String);
 
+pub struct VerificationFailure;
+
 impl Fairing {
     pub fn new() -> Self {
         Self {}
+    }
+}
+
+impl Guard {
+    pub fn verify(&self, form_authenticity_token: &String)
+        -> Result<(), VerificationFailure>
+    {
+        if self.0 == *form_authenticity_token {
+            Ok(())
+        }
+        else {
+            Err(VerificationFailure {})
+        }
     }
 }
 
