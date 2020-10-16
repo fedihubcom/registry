@@ -5,8 +5,8 @@ use rocket::http::{Cookie, Status};
 use rocket::request::{FromRequest, Outcome};
 
 const COOKIE_NAME: &str = "csrf_token";
-const _PARAM_NAME: &str = "authenticity_token";
-const _HEADER_NAME: &str = "X-CSRF-Token";
+const PARAM_NAME: &str = "authenticity_token";
+const HEADER_NAME: &str = "X-CSRF-Token";
 const _PARAM_META_NAME: &str = "csrf-param";
 const _TOKEN_META_NAME: &str = "csrf-token";
 const RAW_TOKEN_LENGTH: usize = 32;
@@ -53,19 +53,31 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
 }
 
 trait RequestCsrf {
-    fn csrf_token_from_session(&self) -> Option<Vec<u8>>;
-
     fn valid_csrf_token_from_session(&self) -> Option<Vec<u8>> {
         self.csrf_token_from_session()
             .and_then(|raw|
                 if raw.len() >= RAW_TOKEN_LENGTH { Some(raw) } else { None }
             )
     }
+
+    fn csrf_token_from_session(&self) -> Option<Vec<u8>>;
+
+    fn csrf_token_from_header(&self) -> Option<String>;
+
+    fn csrf_token_from_form(&self) -> Option<String>;
 }
 
 impl RequestCsrf for Request<'_> {
     fn csrf_token_from_session(&self) -> Option<Vec<u8>> {
         self.cookies().get_private(COOKIE_NAME)
             .and_then(|cookie| base64::decode(cookie.value()).ok())
+    }
+
+    fn csrf_token_from_header(&self) -> Option<String> {
+        self.headers().get_one(HEADER_NAME).and_then(|s| Some(s.to_string()))
+    }
+
+    fn csrf_token_from_form(&self) -> Option<String> {
+        self.get_query_value(PARAM_NAME).and_then(|s| s.ok())
     }
 }
