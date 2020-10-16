@@ -24,9 +24,9 @@ pub fn new(
 #[post("/sign_in", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
-    mut cookies: Cookies,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignIn>,
+    mut cookies: Cookies,
 ) -> Result<Redirect, UserSignInResponse> {
     if let Some(_) = current_user.0 {
         return Err(UserSignInResponse::AlreadySignedIn(
@@ -49,10 +49,10 @@ pub fn create(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[delete("/sign_in")]
+#[delete("/sign_out")]
 pub fn delete(
-    mut cookies: Cookies,
     current_user: states::MaybeCurrentUser,
+    mut cookies: Cookies,
 ) -> Result<Redirect, Redirect> {
     if let None = current_user.0 {
         return Err(Redirect::to(uri!(super::home::index)));

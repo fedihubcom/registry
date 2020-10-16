@@ -24,9 +24,9 @@ pub fn new(
 #[post("/sign_up", data = "<form>")]
 pub fn create(
     db_conn: database::DbConn,
-    mut cookies: Cookies,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
+    mut cookies: Cookies,
 ) -> Result<Redirect, UserSignUpResponse> {
     if let Some(_) = current_user.0 {
         return Err(UserSignUpResponse::AlreadySignedIn(
