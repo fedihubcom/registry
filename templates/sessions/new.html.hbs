@@ -3,6 +3,8 @@
   <h1>Sign In</h1>
 
   <form method="post" action="/sign_in">
+    <input type="hidden" name="authenticity_token" value="{{ csrf_token }}"/>
+
     <div class="form-group">
       <label for="username">Username</label>
       <input id="username" name="username" type="text" class="form-control" placeholder="Username"/>
