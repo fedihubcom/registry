@@ -6,6 +6,7 @@ use rocket::request::{FromRequest, Outcome};
 
 const COOKIE_NAME: &str = "csrf_token";
 const _PARAM_NAME: &str = "authenticity_token";
+const _HEADER_NAME: &str = "X-CSRF-Token";
 const _PARAM_META_NAME: &str = "csrf-param";
 const _TOKEN_META_NAME: &str = "csrf-token";
 const RAW_TOKEN_LENGTH: usize = 32;
