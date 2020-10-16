@@ -1,12 +1,12 @@
 use rand::RngCore;
 use rocket::{Data, Request};
 use rocket::fairing::{Fairing as RocketFairing, Info, Kind};
-use rocket::http::{Cookie, Method, Status};
+use rocket::http::{Cookie, Status};
 use rocket::request::{FromRequest, Outcome};
 
 const COOKIE_NAME: &str = "csrf_token";
-const PARAM_NAME: &str = "authenticity_token";
-const HEADER_NAME: &str = "X-CSRF-Token";
+const _PARAM_NAME: &str = "authenticity_token";
+const _HEADER_NAME: &str = "X-CSRF-Token";
 const _PARAM_META_NAME: &str = "csrf-param";
 const _TOKEN_META_NAME: &str = "csrf-token";
 const RAW_TOKEN_LENGTH: usize = 32;
@@ -45,14 +45,9 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
     type Error = ();
 
     fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
-        if request.is_verified_against_csrf() {
-            Outcome::Success(Self(base64::encode(
-                request.valid_csrf_token_from_session()
-                    .expect("must present because of condition")
-            )))
-        }
-        else {
-            Outcome::Failure((Status::Forbidden, ()))
+        match request.valid_csrf_token_from_session() {
+            None => Outcome::Failure((Status::Forbidden, ())),
+            Some(token) => Outcome::Success(Self(base64::encode(token))),
         }
     }
 }
@@ -66,46 +61,11 @@ trait RequestCsrf {
     }
 
     fn csrf_token_from_session(&self) -> Option<Vec<u8>>;
-
-    fn csrf_token_from_header(&self) -> Option<String>;
-
-    fn csrf_token_from_form(&self) -> Option<String>;
-
-    fn is_verified_against_csrf(&self) -> bool;
-
-    fn is_authenticity_token_valid(&self, token: String) -> bool {
-        match self.valid_csrf_token_from_session() {
-            None => false,
-            Some(session_token) => match base64::decode(token) {
-                Err(_) => false,
-                Ok(token) => token == session_token,
-            },
-        }
-    }
 }
 
 impl RequestCsrf for Request<'_> {
     fn csrf_token_from_session(&self) -> Option<Vec<u8>> {
         self.cookies().get_private(COOKIE_NAME)
             .and_then(|cookie| base64::decode(cookie.value()).ok())
-    }
-
-    fn csrf_token_from_header(&self) -> Option<String> {
-        self.headers().get_one(HEADER_NAME).and_then(|s| Some(s.to_string()))
-    }
-
-    fn csrf_token_from_form(&self) -> Option<String> {
-        self.get_query_value(PARAM_NAME).and_then(|s| s.ok())
-    }
-
-    fn is_verified_against_csrf(&self) -> bool {
-        self.method() == Method::Get ||
-            self.method() == Method::Head ||
-            self.csrf_token_from_header().and_then(
-                |token| Some(self.is_authenticity_token_valid(token))
-            ).unwrap_or(false) ||
-            self.csrf_token_from_form().and_then(
-                |token| Some(self.is_authenticity_token_valid(token))
-            ).unwrap_or(false)
     }
 }
