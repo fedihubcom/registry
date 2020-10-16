@@ -11,7 +11,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/sign_up")]
 pub fn new(
-    _csrf: csrf::Guard,
+    csrf: csrf::Guard,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -19,6 +19,7 @@ pub fn new(
     }
 
     Ok(Template::render("users/new", &BasicTemplateContext {
+        csrf_token: csrf.0,
         layout: "site",
     }))
 }
@@ -57,6 +58,7 @@ pub enum UserSignUpResponse {
 
 #[derive(Serialize)]
 struct BasicTemplateContext {
+    csrf_token: String,
     layout: &'static str,
 }
 

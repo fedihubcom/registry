@@ -13,7 +13,7 @@ const RAW_TOKEN_LENGTH: usize = 32;
 
 pub struct Fairing;
 
-pub struct Guard;
+pub struct Guard(pub String);
 
 impl Fairing {
     pub fn new() -> Self {
@@ -46,7 +46,10 @@ impl<'a, 'r> FromRequest<'a, 'r> for Guard {
 
     fn from_request(request: &'a Request<'r>) -> Outcome<Self, Self::Error> {
         if request.is_verified_against_csrf() {
-            Outcome::Success(Self {})
+            Outcome::Success(Self(base64::encode(
+                request.valid_csrf_token_from_session()
+                    .expect("must present because of condition")
+            )))
         }
         else {
             Outcome::Failure((Status::Forbidden, ()))

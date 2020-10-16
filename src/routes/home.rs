@@ -7,13 +7,14 @@ use rocket_contrib::templates::Template;
 
 #[get("/")]
 pub fn index(
-    _csrf: csrf::Guard,
+    csrf: csrf::Guard,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, IndexResponse> {
     let all_users = models::User::all(db_conn)?;
 
     Ok(Template::render("home/index", &IndexTemplateContext {
+        csrf_token: csrf.0,
         layout: "site",
         current_user: current_user.0,
         users: all_users,
@@ -29,6 +30,7 @@ pub enum IndexResponse {
 
 #[derive(Serialize)]
 struct IndexTemplateContext {
+    csrf_token: String,
     layout: &'static str,
     current_user: Option<models::User>,
     users: Vec<models::User>,
