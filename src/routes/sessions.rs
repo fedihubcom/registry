@@ -54,10 +54,11 @@ pub fn create(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[delete("/sign_out")]
+#[delete("/sign_out", data = "<_form>")]
 pub fn delete(
     _csrf: csrf::Guard,
     current_user: states::MaybeCurrentUser,
+    _form: Form<forms::UserSignOut>,
     mut cookies: Cookies,
 ) -> Result<Redirect, Redirect> {
     if let None = current_user.0 {

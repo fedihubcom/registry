@@ -2,12 +2,19 @@ use validator::{Validate, ValidationError};
 
 #[derive(FromForm)]
 pub struct UserSignIn {
+    pub authenticity_token: String,
     pub username: String,
     pub password: String,
 }
 
+#[derive(FromForm)]
+pub struct UserSignOut {
+    pub authenticity_token: String,
+}
+
 #[derive(FromForm, Validate)]
 pub struct UserSignUp {
+    pub authenticity_token: String,
     #[validate(length(min = 4, max = 128), custom = "validate_username")]
     pub username: String,
     #[validate(length(min = 8, max = 128), custom = "validate_password")]
