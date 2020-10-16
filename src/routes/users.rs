@@ -1,4 +1,3 @@
-use crate::csrf;
 use crate::database;
 use crate::states;
 use crate::models;
@@ -11,7 +10,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/sign_up")]
 pub fn new(
-    csrf: csrf::Guard,
+    csrf: rocket_csrf::Guard,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -26,7 +25,7 @@ pub fn new(
 
 #[post("/sign_up", data = "<form>")]
 pub fn create(
-    csrf: csrf::Guard,
+    csrf: rocket_csrf::Guard,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
@@ -102,8 +101,8 @@ impl From<diesel::result::Error> for UserSignUpResponse {
     }
 }
 
-impl From<csrf::VerificationFailure> for UserSignUpResponse {
-    fn from(_: csrf::VerificationFailure) -> Self {
+impl From<rocket_csrf::VerificationFailure> for UserSignUpResponse {
+    fn from(_: rocket_csrf::VerificationFailure) -> Self {
         Self::InvalidAuthenticityToken(())
     }
 }

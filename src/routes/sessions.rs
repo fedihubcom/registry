@@ -1,4 +1,3 @@
-use crate::csrf;
 use crate::database;
 use crate::states;
 use crate::models;
@@ -11,7 +10,7 @@ use rocket_contrib::templates::Template;
 
 #[get("/sign_in")]
 pub fn new(
-    csrf: csrf::Guard,
+    csrf: rocket_csrf::Guard,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -26,7 +25,7 @@ pub fn new(
 
 #[post("/sign_in", data = "<form>")]
 pub fn create(
-    csrf: csrf::Guard,
+    csrf: rocket_csrf::Guard,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignIn>,
@@ -58,7 +57,7 @@ pub fn create(
 
 #[delete("/sign_out", data = "<form>")]
 pub fn delete(
-    csrf: csrf::Guard,
+    csrf: rocket_csrf::Guard,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignOut>,
     mut cookies: Cookies,
@@ -108,14 +107,14 @@ impl From<diesel::result::Error> for UserSignInResponse {
     }
 }
 
-impl From<csrf::VerificationFailure> for UserSignInResponse {
-    fn from(_: csrf::VerificationFailure) -> UserSignInResponse {
+impl From<rocket_csrf::VerificationFailure> for UserSignInResponse {
+    fn from(_: rocket_csrf::VerificationFailure) -> UserSignInResponse {
         Self::InvalidAuthenticityToken(())
     }
 }
 
-impl From<csrf::VerificationFailure> for UserSignOutResponse {
-    fn from(_: csrf::VerificationFailure) -> UserSignOutResponse {
+impl From<rocket_csrf::VerificationFailure> for UserSignOutResponse {
+    fn from(_: rocket_csrf::VerificationFailure) -> UserSignOutResponse {
         Self::InvalidAuthenticityToken(())
     }
 }
