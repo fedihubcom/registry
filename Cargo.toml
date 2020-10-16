@@ -13,9 +13,11 @@ categories = []
 publish = true
 
 [dependencies]
+base64 = "0.13.0"
 bcrypt = "0.8.2"
 dotenv = "0.15.0"
 r2d2 = "0.8.9"
+rand = "0.7.3"
 regex = "1.4.1"
 serde = "1.0"
 serde_derive = "1.0"
