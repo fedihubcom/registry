@@ -8,7 +8,7 @@ use rocket::request::Form;
 use rocket_contrib::templates::Template;
 
 #[get("/sign_up")]
-pub fn show(
+pub fn new(
     current_user: states::CurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
