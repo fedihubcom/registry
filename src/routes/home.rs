@@ -3,10 +3,11 @@ use crate::states;
 use crate::models;
 
 use rocket_contrib::templates::Template;
+use rocket_csrf::CsrfToken;
 
 #[get("/")]
 pub fn index(
-    csrf: rocket_csrf::Guard,
+    csrf: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, IndexResponse> {

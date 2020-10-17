@@ -7,10 +7,11 @@ use rocket::http::{Cookie, Cookies};
 use rocket::response::Redirect;
 use rocket::request::Form;
 use rocket_contrib::templates::Template;
+use rocket_csrf::CsrfToken;
 
 #[get("/sign_up")]
 pub fn new(
-    csrf: rocket_csrf::Guard,
+    csrf: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -25,7 +26,7 @@ pub fn new(
 
 #[post("/sign_up", data = "<form>")]
 pub fn create(
-    csrf: rocket_csrf::Guard,
+    csrf: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
