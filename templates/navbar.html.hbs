@@ -33,7 +33,7 @@
           <div class="dropdown-menu" aria-labelledby="currentUserNavbarDropdown">
             <form method="post" action="/sign_out">
               <input type="hidden" name="_method"            value="delete"/>
-              <input type="hidden" name="authenticity_token" value="{{ csrf_token }}"/>
+              <input type="hidden" name="authenticity_token" value="{{ authenticity_token }}"/>
 
               <button type="submit" class="dropdown-item">
                 Sign Out

@@ -3,7 +3,7 @@
   <h1>Sign Up</h1>
 
   <form method="post" action="/sign_up">
-    <input type="hidden" name="authenticity_token" value="{{ csrf_token }}"/>
+    <input type="hidden" name="authenticity_token" value="{{ authenticity_token }}"/>
 
     <div class="form-group">
       <label for="username">Username</label>

@@ -11,7 +11,7 @@ use rocket_csrf::CsrfToken;
 
 #[get("/sign_in")]
 pub fn new(
-    csrf: CsrfToken,
+    csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -19,20 +19,20 @@ pub fn new(
     }
 
     Ok(Template::render("sessions/new", &BasicTemplateContext {
-        csrf_token: csrf.0,
+        authenticity_token: csrf_token.0,
         layout: "site",
     }))
 }
 
 #[post("/sign_in", data = "<form>")]
 pub fn create(
-    csrf: CsrfToken,
+    csrf_token: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignIn>,
     mut cookies: Cookies,
 ) -> Result<Redirect, UserSignInResponse> {
-    csrf.verify(&form.authenticity_token)?;
+    csrf_token.verify(&form.authenticity_token)?;
 
     if let Some(_) = current_user.0 {
         return Err(UserSignInResponse::AlreadySignedIn(
@@ -45,7 +45,7 @@ pub fn create(
     if !user.authorize(&form.password) {
         return Err(UserSignInResponse::InvalidCredentials(
             Template::render("sessions/new", &BasicTemplateContext {
-                csrf_token: csrf.0,
+                authenticity_token: csrf_token.0,
                 layout: "site",
             })
         ));
@@ -58,12 +58,12 @@ pub fn create(
 
 #[delete("/sign_out", data = "<form>")]
 pub fn delete(
-    csrf: CsrfToken,
+    csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignOut>,
     mut cookies: Cookies,
 ) -> Result<Redirect, UserSignOutResponse> {
-    csrf.verify(&form.authenticity_token)?;
+    csrf_token.verify(&form.authenticity_token)?;
 
     if let None = current_user.0 {
         return Err(UserSignOutResponse::NoUserSignedIn(
@@ -98,7 +98,7 @@ pub enum UserSignOutResponse {
 
 #[derive(Serialize)]
 struct BasicTemplateContext {
-    csrf_token: String,
+    authenticity_token: String,
     layout: &'static str,
 }
 

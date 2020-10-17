@@ -11,7 +11,7 @@ use rocket_csrf::CsrfToken;
 
 #[get("/sign_up")]
 pub fn new(
-    csrf: CsrfToken,
+    csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, Redirect> {
     if let Some(_) = current_user.0 {
@@ -19,20 +19,20 @@ pub fn new(
     }
 
     Ok(Template::render("users/new", &BasicTemplateContext {
-        csrf_token: csrf.0,
+        authenticity_token: csrf_token.0,
         layout: "site",
     }))
 }
 
 #[post("/sign_up", data = "<form>")]
 pub fn create(
-    csrf: CsrfToken,
+    csrf_token: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
     mut cookies: Cookies,
 ) -> Result<Redirect, UserSignUpResponse> {
-    csrf.verify(&form.authenticity_token)?;
+    csrf_token.verify(&form.authenticity_token)?;
 
     if let Some(_) = current_user.0 {
         return Err(UserSignUpResponse::AlreadySignedIn(
@@ -40,7 +40,7 @@ pub fn create(
         ));
     }
 
-    let user = XXXXX { form: form.0, csrf_token: csrf.0 }
+    let user = XXXXX { form: form.0, authenticity_token: csrf_token.0 }
         .validate()?
         .save(db_conn)?;
 
@@ -63,17 +63,17 @@ pub enum UserSignUpResponse {
 
 #[derive(Serialize)]
 struct BasicTemplateContext {
-    csrf_token: String,
+    authenticity_token: String,
     layout: &'static str,
 }
 
 struct XXXXX {
     form: forms::UserSignUp,
-    csrf_token: String,
+    authenticity_token: String,
 }
 
 struct YYYYY {
-    csrf_token: String,
+    authenticity_token: String,
 }
 
 impl XXXXX {
@@ -81,7 +81,7 @@ impl XXXXX {
         match models::NewUser::from_form(&self.form) {
             Ok(user) => Ok(user),
             Err(_) => Err(YYYYY {
-                csrf_token: self.csrf_token.to_string(),
+                authenticity_token: self.authenticity_token.to_string(),
             }),
         }
     }
@@ -90,7 +90,7 @@ impl XXXXX {
 impl From<YYYYY> for UserSignUpResponse {
     fn from(yyyyy: YYYYY) -> Self {
         Self::InvalidForm(Template::render("users/new", &BasicTemplateContext {
-            csrf_token: yyyyy.csrf_token,
+            authenticity_token: yyyyy.authenticity_token,
             layout: "site",
         }))
     }
