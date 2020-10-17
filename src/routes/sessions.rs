@@ -44,15 +44,11 @@ pub fn create(
         ));
     }
 
-    let user = models::User::by_username(db_conn, form.username.to_string())?;
+    let user = models::User::by_username(db_conn, form.username.to_string())
+        .or_else(|_| Err(invalid_sign_in_credentials(&csrf_token.0)))?;
 
     if !user.authorize(&form.password) {
-        return Err(CommonResponse::InvalidCredentials(
-            Template::render("sessions/new", &BasicTemplateContext {
-                authenticity_token: csrf_token.0,
-                layout: "site",
-            })
-        ));
+        return Err(invalid_sign_in_credentials(&csrf_token.0));
     }
 
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
@@ -84,4 +80,13 @@ pub fn delete(
 struct BasicTemplateContext {
     authenticity_token: String,
     layout: &'static str,
+}
+
+fn invalid_sign_in_credentials(authenticity_token: &String) -> CommonResponse {
+    CommonResponse::InvalidCredentials(
+        Template::render("sessions/new", &BasicTemplateContext {
+            authenticity_token: authenticity_token.to_string(),
+            layout: "site",
+        })
+    )
 }
