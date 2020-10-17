@@ -53,48 +53,27 @@ pub fn create(
         ));
     }
 
-    let user = XXXXX { form: form.0, authenticity_token: csrf_token.0 }
-        .validate()?
-        .save(db_conn)?;
+    let user = models::NewUser::from_form(&form)
+        .or_else(|_| Err(invalid_sign_up_form(&csrf_token.0)))?
+        .save(db_conn)
+        .or_else(|_| Err(invalid_sign_up_form(&csrf_token.0)))?;
 
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
 
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-struct XXXXX {
-    form: forms::UserSignUp,
-    authenticity_token: String,
-}
+fn invalid_sign_up_form(authenticity_token: &String) -> CommonResponse {
+    let page_context = views::users::New {
+        authenticity_token: authenticity_token.to_string(),
+    };
 
-struct YYYYY {
-    authenticity_token: String,
-}
+    let context = views::Site {
+        page: "users/new".to_string(),
+        page_context,
+        authenticity_token: authenticity_token.to_string(),
+        current_user: None,
+    };
 
-impl XXXXX {
-    fn validate(&self) -> Result<models::NewUser, YYYYY> {
-        match models::NewUser::from_form(&self.form) {
-            Ok(user) => Ok(user),
-            Err(_) => Err(YYYYY {
-                authenticity_token: self.authenticity_token.to_string(),
-            }),
-        }
-    }
-}
-
-impl From<YYYYY> for CommonResponse {
-    fn from(yyyyy: YYYYY) -> Self {
-        let page_context = views::users::New {
-            authenticity_token: yyyyy.authenticity_token.to_string(),
-        };
-
-        let context = views::Site {
-            page: "users/new".to_string(),
-            page_context,
-            authenticity_token: yyyyy.authenticity_token.to_string(),
-            current_user: None,
-        };
-
-        Self::InvalidForm(Template::render("site", &context))
-    }
+    CommonResponse::InvalidForm(Template::render("site", &context))
 }
