@@ -1,5 +1,6 @@
 use crate::database;
 use crate::states;
+use crate::views;
 use crate::models;
 use crate::forms;
 
@@ -22,10 +23,18 @@ pub fn new(
         ));
     }
 
-    Ok(Template::render("users/new", &BasicTemplateContext {
-        authenticity_token: csrf_token.0,
-        layout: "site",
-    }))
+    let page_context = views::users::New {
+        authenticity_token: csrf_token.0.to_string(),
+    };
+
+    let context = views::Site {
+        page: "users/new".to_string(),
+        page_context,
+        authenticity_token: csrf_token.0.to_string(),
+        current_user: None,
+    };
+
+    Ok(Template::render("site", &context))
 }
 
 #[post("/sign_up", data = "<form>")]
@@ -53,12 +62,6 @@ pub fn create(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[derive(Serialize)]
-struct BasicTemplateContext {
-    authenticity_token: String,
-    layout: &'static str,
-}
-
 struct XXXXX {
     form: forms::UserSignUp,
     authenticity_token: String,
@@ -81,9 +84,17 @@ impl XXXXX {
 
 impl From<YYYYY> for CommonResponse {
     fn from(yyyyy: YYYYY) -> Self {
-        Self::InvalidForm(Template::render("users/new", &BasicTemplateContext {
-            authenticity_token: yyyyy.authenticity_token,
-            layout: "site",
-        }))
+        let page_context = views::users::New {
+            authenticity_token: yyyyy.authenticity_token.to_string(),
+        };
+
+        let context = views::Site {
+            page: "users/new".to_string(),
+            page_context,
+            authenticity_token: yyyyy.authenticity_token.to_string(),
+            current_user: None,
+        };
+
+        Self::InvalidForm(Template::render("site", &context))
     }
 }

@@ -1,5 +1,6 @@
 use crate::database;
 use crate::states;
+use crate::views;
 use crate::models;
 use crate::forms;
 
@@ -22,10 +23,18 @@ pub fn new(
         ));
     }
 
-    Ok(Template::render("sessions/new", &BasicTemplateContext {
-        authenticity_token: csrf_token.0,
-        layout: "site",
-    }))
+    let page_context = views::sessions::New {
+        authenticity_token: csrf_token.0.to_string(),
+    };
+
+    let context = views::Site {
+        page: "sessions/new".to_string(),
+        page_context,
+        authenticity_token: csrf_token.0.to_string(),
+        current_user: None,
+    };
+
+    Ok(Template::render("site", &context))
 }
 
 #[post("/sign_in", data = "<form>")]
@@ -76,17 +85,19 @@ pub fn delete(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[derive(Serialize)]
-struct BasicTemplateContext {
-    authenticity_token: String,
-    layout: &'static str,
-}
-
 fn invalid_sign_in_credentials(authenticity_token: &String) -> CommonResponse {
+    let page_context = views::sessions::New {
+        authenticity_token: authenticity_token.to_string(),
+    };
+
+    let context = views::Site {
+        page: "sessions/new".to_string(),
+        page_context,
+        authenticity_token: authenticity_token.to_string(),
+        current_user: None,
+    };
+
     CommonResponse::InvalidCredentials(
-        Template::render("sessions/new", &BasicTemplateContext {
-            authenticity_token: authenticity_token.to_string(),
-            layout: "site",
-        })
+        Template::render("site", &context)
     )
 }

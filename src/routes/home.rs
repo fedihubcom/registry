@@ -1,5 +1,6 @@
 use crate::database;
 use crate::states;
+use crate::views;
 use crate::models;
 
 use crate::responses::CommonResponse;
@@ -15,18 +16,16 @@ pub fn index(
 ) -> Result<Template, CommonResponse> {
     let all_users = models::User::all(db_conn)?;
 
-    Ok(Template::render("home/index", &IndexTemplateContext {
-        authenticity_token: csrf_token.0,
-        layout: "site",
-        current_user: current_user.0,
+    let page_context = views::home::Index {
         users: all_users,
-    }))
-}
+    };
 
-#[derive(Serialize)]
-struct IndexTemplateContext {
-    authenticity_token: String,
-    layout: &'static str,
-    current_user: Option<models::User>,
-    users: Vec<models::User>,
+    let context = views::Site {
+        page: "home/index".to_string(),
+        page_context,
+        authenticity_token: csrf_token.0,
+        current_user: current_user.0,
+    };
+
+    Ok(Template::render("site", &context))
 }

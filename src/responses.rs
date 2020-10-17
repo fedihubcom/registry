@@ -1,3 +1,5 @@
+use crate::views;
+
 use rocket::response::Redirect;
 use rocket_contrib::templates::Template;
 
@@ -15,12 +17,6 @@ pub enum CommonResponse {
     UnknownError(Template),
 }
 
-#[derive(Serialize)]
-struct ErrorTemplateContext {
-    layout: &'static str,
-    error_code: u16,
-}
-
 impl From<rocket_csrf::VerificationFailure> for CommonResponse {
     fn from(_: rocket_csrf::VerificationFailure) -> Self {
         Self::InvalidAuthenticityToken(Redirect::to("/"))
@@ -29,11 +25,17 @@ impl From<rocket_csrf::VerificationFailure> for CommonResponse {
 
 impl From<diesel::result::Error> for CommonResponse {
     fn from(_: diesel::result::Error) -> Self {
-        let template_context = ErrorTemplateContext {
-            layout: "site",
+        let page_context = views::Error {
             error_code: 500,
         };
 
-        Self::UnknownError(Template::render("error", &template_context))
+        let context = views::Site {
+            page: "error".to_string(),
+            page_context,
+            authenticity_token: "".to_string(), // TODO
+            current_user: None, // TODO
+        };
+
+        Self::UnknownError(Template::render("site", &context))
     }
 }
