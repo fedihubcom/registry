@@ -7,6 +7,7 @@ mod web;
 mod database;
 mod states;
 mod routes;
+mod responses;
 mod schema;
 mod models;
 mod forms;

@@ -3,6 +3,8 @@ use crate::states;
 use crate::models;
 use crate::forms;
 
+use crate::responses::CommonResponse;
+
 use rocket::http::{Cookie, Cookies};
 use rocket::response::Redirect;
 use rocket::request::Form;
@@ -13,9 +15,11 @@ use rocket_csrf::CsrfToken;
 pub fn new(
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
-) -> Result<Template, Redirect> {
+) -> Result<Template, CommonResponse> {
     if let Some(_) = current_user.0 {
-        return Err(Redirect::to(uri!(super::home::index)));
+        return Err(CommonResponse::AlreadySignedIn(
+            Redirect::to(uri!(super::home::index))
+        ));
     }
 
     Ok(Template::render("sessions/new", &BasicTemplateContext {
@@ -31,11 +35,11 @@ pub fn create(
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignIn>,
     mut cookies: Cookies,
-) -> Result<Redirect, UserSignInResponse> {
+) -> Result<Redirect, CommonResponse> {
     csrf_token.verify(&form.authenticity_token)?;
 
     if let Some(_) = current_user.0 {
-        return Err(UserSignInResponse::AlreadySignedIn(
+        return Err(CommonResponse::AlreadySignedIn(
             Redirect::to(uri!(super::home::index))
         ));
     }
@@ -43,7 +47,7 @@ pub fn create(
     let user = models::User::by_username(db_conn, form.username.to_string())?;
 
     if !user.authorize(&form.password) {
-        return Err(UserSignInResponse::InvalidCredentials(
+        return Err(CommonResponse::InvalidCredentials(
             Template::render("sessions/new", &BasicTemplateContext {
                 authenticity_token: csrf_token.0,
                 layout: "site",
@@ -62,11 +66,11 @@ pub fn delete(
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignOut>,
     mut cookies: Cookies,
-) -> Result<Redirect, UserSignOutResponse> {
+) -> Result<Redirect, CommonResponse> {
     csrf_token.verify(&form.authenticity_token)?;
 
     if let None = current_user.0 {
-        return Err(UserSignOutResponse::NoUserSignedIn(
+        return Err(CommonResponse::NotSignedIn(
             Redirect::to(uri!(super::home::index))
         ));
     }
@@ -76,46 +80,8 @@ pub fn delete(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-#[derive(Debug, rocket::response::Responder)]
-#[response(content_type = "text/html")]
-pub enum UserSignInResponse {
-    AlreadySignedIn(Redirect),
-    #[response(status = 403)]
-    InvalidAuthenticityToken(()),
-    #[response(status = 422)]
-    InvalidCredentials(Template),
-    #[response(status = 500)]
-    UnknownError(()),
-}
-
-#[derive(Debug, rocket::response::Responder)]
-#[response(context_type = "text/html")]
-pub enum UserSignOutResponse {
-    NoUserSignedIn(Redirect),
-    #[response(status = 403)]
-    InvalidAuthenticityToken(()),
-}
-
 #[derive(Serialize)]
 struct BasicTemplateContext {
     authenticity_token: String,
     layout: &'static str,
-}
-
-impl From<diesel::result::Error> for UserSignInResponse {
-    fn from(_: diesel::result::Error) -> Self {
-        Self::UnknownError(())
-    }
-}
-
-impl From<rocket_csrf::VerificationFailure> for UserSignInResponse {
-    fn from(_: rocket_csrf::VerificationFailure) -> UserSignInResponse {
-        Self::InvalidAuthenticityToken(())
-    }
-}
-
-impl From<rocket_csrf::VerificationFailure> for UserSignOutResponse {
-    fn from(_: rocket_csrf::VerificationFailure) -> UserSignOutResponse {
-        Self::InvalidAuthenticityToken(())
-    }
 }

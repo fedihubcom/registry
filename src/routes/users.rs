@@ -3,6 +3,8 @@ use crate::states;
 use crate::models;
 use crate::forms;
 
+use crate::responses::CommonResponse;
+
 use rocket::http::{Cookie, Cookies};
 use rocket::response::Redirect;
 use rocket::request::Form;
@@ -13,9 +15,11 @@ use rocket_csrf::CsrfToken;
 pub fn new(
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
-) -> Result<Template, Redirect> {
+) -> Result<Template, CommonResponse> {
     if let Some(_) = current_user.0 {
-        return Err(Redirect::to(uri!(super::home::index)));
+        return Err(CommonResponse::AlreadySignedIn(
+            Redirect::to(uri!(super::home::index))
+        ));
     }
 
     Ok(Template::render("users/new", &BasicTemplateContext {
@@ -31,11 +35,11 @@ pub fn create(
     current_user: states::MaybeCurrentUser,
     form: Form<forms::UserSignUp>,
     mut cookies: Cookies,
-) -> Result<Redirect, UserSignUpResponse> {
+) -> Result<Redirect, CommonResponse> {
     csrf_token.verify(&form.authenticity_token)?;
 
     if let Some(_) = current_user.0 {
-        return Err(UserSignUpResponse::AlreadySignedIn(
+        return Err(CommonResponse::AlreadySignedIn(
             Redirect::to(uri!(super::home::index))
         ));
     }
@@ -47,18 +51,6 @@ pub fn create(
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
 
     Ok(Redirect::to(uri!(super::home::index)))
-}
-
-#[derive(Debug, rocket::response::Responder)]
-#[response(content_type = "text/html")]
-pub enum UserSignUpResponse {
-    AlreadySignedIn(Redirect),
-    #[response(status = 403)]
-    InvalidAuthenticityToken(()),
-    #[response(status = 422)]
-    InvalidForm(Template),
-    #[response(status = 500)]
-    UnknownError(()),
 }
 
 #[derive(Serialize)]
@@ -87,23 +79,11 @@ impl XXXXX {
     }
 }
 
-impl From<YYYYY> for UserSignUpResponse {
+impl From<YYYYY> for CommonResponse {
     fn from(yyyyy: YYYYY) -> Self {
         Self::InvalidForm(Template::render("users/new", &BasicTemplateContext {
             authenticity_token: yyyyy.authenticity_token,
             layout: "site",
         }))
-    }
-}
-
-impl From<diesel::result::Error> for UserSignUpResponse {
-    fn from(_: diesel::result::Error) -> Self {
-        Self::UnknownError(())
-    }
-}
-
-impl From<rocket_csrf::VerificationFailure> for UserSignUpResponse {
-    fn from(_: rocket_csrf::VerificationFailure) -> Self {
-        Self::InvalidAuthenticityToken(())
     }
 }

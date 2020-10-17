@@ -2,6 +2,8 @@ use crate::database;
 use crate::states;
 use crate::models;
 
+use crate::responses::CommonResponse;
+
 use rocket_contrib::templates::Template;
 use rocket_csrf::CsrfToken;
 
@@ -10,7 +12,7 @@ pub fn index(
     csrf_token: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,
-) -> Result<Template, IndexResponse> {
+) -> Result<Template, CommonResponse> {
     let all_users = models::User::all(db_conn)?;
 
     Ok(Template::render("home/index", &IndexTemplateContext {
@@ -21,23 +23,10 @@ pub fn index(
     }))
 }
 
-#[derive(Debug, rocket::response::Responder)]
-#[response(content_type = "text/html")]
-pub enum IndexResponse {
-    #[response(status = 500)]
-    UnknownError(()),
-}
-
 #[derive(Serialize)]
 struct IndexTemplateContext {
     authenticity_token: String,
     layout: &'static str,
     current_user: Option<models::User>,
     users: Vec<models::User>,
-}
-
-impl From<diesel::result::Error> for IndexResponse {
-    fn from(_: diesel::result::Error) -> Self {
-        Self::UnknownError(())
-    }
 }
