@@ -24,14 +24,14 @@ pub fn new(
     }
 
     let page_context = views::users::New {
-        authenticity_token: csrf_token.0.to_string(),
+        authenticity_token: csrf_token.authenticity_token().to_string(),
         username: "".to_string(),
     };
 
     let context = views::Site {
         page: "users/new".to_string(),
         page_context,
-        authenticity_token: csrf_token.0.to_string(),
+        authenticity_token: csrf_token.authenticity_token().to_string(),
         current_user: None,
     };
 
@@ -55,9 +55,13 @@ pub fn create(
     }
 
     let user = models::NewUser::from_form(&form)
-        .or_else(|_| Err(invalid_sign_up_form(&csrf_token.0, &form.0)))?
+        .or_else(|_| {
+            Err(invalid_sign_up_form(&csrf_token.authenticity_token(), &form.0))
+        })?
         .save(db_conn)
-        .or_else(|_| Err(invalid_sign_up_form(&csrf_token.0, &form.0)))?;
+        .or_else(|_| {
+            Err(invalid_sign_up_form(&csrf_token.authenticity_token(), &form.0))
+        })?;
 
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
 
@@ -65,7 +69,7 @@ pub fn create(
 }
 
 fn invalid_sign_up_form(
-    authenticity_token: &String,
+    authenticity_token: &str,
     form: &forms::UserSignUp,
 ) -> CommonResponse {
     let page_context = views::users::New {

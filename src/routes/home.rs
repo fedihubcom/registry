@@ -14,7 +14,7 @@ pub fn index(
     let context = views::Site {
         page: "home/index".to_string(),
         page_context: (),
-        authenticity_token: csrf_token.0,
+        authenticity_token: csrf_token.authenticity_token().to_string(),
         current_user: current_user.0,
     };
 
