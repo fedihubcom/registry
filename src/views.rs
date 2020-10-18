@@ -28,6 +28,7 @@ pub mod sessions {
     #[derive(Serialize)]
     pub struct New {
         pub authenticity_token: String,
+        pub username: String,
     }
 }
 
@@ -35,5 +36,6 @@ pub mod users {
     #[derive(Serialize)]
     pub struct New {
         pub authenticity_token: String,
+        pub username: String,
     }
 }

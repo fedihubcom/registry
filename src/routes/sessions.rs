@@ -25,6 +25,7 @@ pub fn new(
 
     let page_context = views::sessions::New {
         authenticity_token: csrf_token.0.to_string(),
+        username: "".to_string(),
     };
 
     let context = views::Site {
@@ -54,10 +55,10 @@ pub fn create(
     }
 
     let user = models::User::by_username(db_conn, form.username.to_string())
-        .or_else(|_| Err(invalid_sign_in_credentials(&csrf_token.0)))?;
+        .or_else(|_| Err(invalid_sign_in_credentials(&csrf_token.0, &form.0)))?;
 
     if !user.authorize(&form.password) {
-        return Err(invalid_sign_in_credentials(&csrf_token.0));
+        return Err(invalid_sign_in_credentials(&csrf_token.0, &form.0));
     }
 
     cookies.add_private(Cookie::new("user_id", user.id.to_string()));
@@ -85,9 +86,13 @@ pub fn delete(
     Ok(Redirect::to(uri!(super::home::index)))
 }
 
-fn invalid_sign_in_credentials(authenticity_token: &String) -> CommonResponse {
+fn invalid_sign_in_credentials(
+    authenticity_token: &String,
+    form: &forms::UserSignIn,
+) -> CommonResponse {
     let page_context = views::sessions::New {
         authenticity_token: authenticity_token.to_string(),
+        username: form.username.to_string(),
     };
 
     let context = views::Site {
