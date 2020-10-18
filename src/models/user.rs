@@ -4,7 +4,6 @@ use crate::forms;
 use crate::schema::users;
 
 use diesel::prelude::*;
-use diesel::query_builder::AsQuery;
 use validator::{Validate, ValidationErrors};
 
 #[derive(Debug, Serialize, Queryable)]
@@ -44,16 +43,6 @@ impl User {
         println!("{}", debug);
 
         query.first::<Self>(&*db_conn)
-    }
-
-    pub fn all(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
-        let query = users::table.as_query();
-
-        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
-
-        println!("{}", debug);
-
-        query.load::<Self>(&*db_conn)
     }
 
     pub fn authorize(&self, password: &String) -> bool {
