@@ -5,6 +5,7 @@
 mod config;
 mod database;
 mod forms;
+mod i18n;
 mod models;
 mod responses;
 mod routes;

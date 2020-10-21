@@ -128,6 +128,19 @@ impl Config {
         Ok(result_str.to_string())
     }
 
+    pub fn locales_path(&self) -> Result<String, ()> {
+        let mut result_path_buf = std::path::PathBuf::new();
+        result_path_buf.push(self.root.to_string());
+        result_path_buf.push("locales");
+
+        let result_str = match result_path_buf.to_str() {
+            None => return Err(()),
+            Some(value) => value,
+        };
+
+        Ok(result_str.to_string())
+    }
+
     pub fn use_env_for_root(&mut self) {
         self.root = match std::env::var("ROOT") {
             Err(_) => return,

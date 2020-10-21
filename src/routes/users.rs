@@ -4,8 +4,10 @@ use crate::views;
 use crate::models;
 use crate::forms;
 
+use crate::i18n::I18n;
 use crate::responses::CommonResponse;
 
+use rocket::State;
 use rocket::http::{Cookie, Cookies};
 use rocket::response::Redirect;
 use rocket::request::Form;
@@ -14,6 +16,7 @@ use rocket_csrf::CsrfToken;
 
 #[get("/sign_up")]
 pub fn new(
+    _i18n: State<I18n>,
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
@@ -40,6 +43,7 @@ pub fn new(
 
 #[post("/sign_up", data = "<form>")]
 pub fn create(
+    _i18n: State<I18n>,
     csrf_token: CsrfToken,
     db_conn: database::DbConn,
     current_user: states::MaybeCurrentUser,

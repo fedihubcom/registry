@@ -1,13 +1,16 @@
 use crate::states;
 use crate::views;
 
+use crate::i18n::I18n;
 use crate::responses::CommonResponse;
 
+use rocket::State;
 use rocket_contrib::templates::Template;
 use rocket_csrf::CsrfToken;
 
 #[get("/")]
 pub fn index(
+    _i18n: State<I18n>,
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
