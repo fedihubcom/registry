@@ -30,3 +30,36 @@ CREATE UNIQUE INDEX index_employee_infos_on_employee_id_and_locale
 
 CREATE UNIQUE INDEX index_employee_contacts_on_employee_id
   ON employee_contacts USING btree (employee_id, name);
+
+-- Insert data
+
+WITH employee_ids AS (
+  INSERT INTO employees (name, role)
+    VALUES ('Alex Kotov', 'Founder')
+    RETURNING id
+    AS employee_id
+)
+  INSERT INTO employee_contacts (employee_id, name, link) VALUES
+    ((SELECT employee_id FROM employee_ids),
+      'Matrix',
+      'https://matrix.to/#/@kotovalexarian:fedihub.com'),
+    ((SELECT employee_id FROM employee_ids),
+      'Twitter',
+      'https://twitter.com/kotovalexarian'),
+    ((SELECT employee_id FROM employee_ids),
+      'Facebook',
+      'https://fb.com/kotovalexarian');
+
+WITH employee_ids AS (
+  INSERT INTO employees (name, role)
+    VALUES ('Kirill Goncharov', 'System administrator')
+    RETURNING id
+    AS employee_id
+)
+  INSERT INTO employee_contacts (employee_id, name, link) VALUES
+    ((SELECT employee_id FROM employee_ids),
+      'Matrix',
+      'https://matrix.to/#/@xuhcc:matrix.org'),
+    ((SELECT employee_id FROM employee_ids),
+      'GitHub',
+      'https://github.com/xuhcc');
