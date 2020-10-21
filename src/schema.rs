@@ -1,4 +1,14 @@
 table! {
+    donation_crypto_addresses (id) {
+        id -> Int4,
+        name -> Varchar,
+        code -> Varchar,
+        address -> Varchar,
+        history -> Varchar,
+    }
+}
+
+table! {
     employee_contacts (id) {
         id -> Int4,
         employee_id -> Int4,
@@ -35,6 +45,7 @@ table! {
 }
 
 allow_tables_to_appear_in_same_query!(
+    donation_crypto_addresses,
     employee_contacts,
     employee_infos,
     employees,
