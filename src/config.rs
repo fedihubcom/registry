@@ -7,8 +7,7 @@ use rocket::config::{
 const DEFAULT_ENVIRONMENT: Environment = Environment::Development;
 const DEFAULT_ADDRESS: &str = "127.0.0.1";
 const DEFAULT_PORT: u16 = 8000;
-const DEFAULT_DATABASE_URL: &str =
-    "postgres://fedihub:fedihub@localhost/fedihub_development";
+const DEFAULT_DATABASE_URL: &str = "postgres://fedihub_website_development:fedihub_website_development@localhost:5432/fedihub_website_development";
 
 #[derive(Debug)]
 pub enum Environment {
