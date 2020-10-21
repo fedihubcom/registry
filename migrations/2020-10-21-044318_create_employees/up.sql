@@ -11,6 +11,7 @@ CREATE TABLE employee_infos (
   employee_id SERIAL NOT NULL,
   locale VARCHAR NOT NULL,
   name VARCHAR NOT NULL,
+  role VARCHAR NOT NULL,
 
   CONSTRAINT employee_id_fk FOREIGN KEY (employee_id) REFERENCES employees(id)
 );

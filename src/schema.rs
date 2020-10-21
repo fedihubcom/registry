@@ -4,6 +4,7 @@ table! {
         employee_id -> Int4,
         locale -> Varchar,
         name -> Varchar,
+        role -> Varchar,
     }
 }
 
