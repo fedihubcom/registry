@@ -17,10 +17,10 @@ pub fn index(
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
-    let employees = models::Employee::all(db_conn)?;
+    let employees_with_contacts = models::Employee::all_with_contacts(db_conn)?;
 
     let page_context = views::team::Index {
-        employees,
+        employees_with_contacts,
     };
 
     let context = views::Site {

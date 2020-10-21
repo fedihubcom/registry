@@ -36,7 +36,7 @@ pub mod team {
 
     #[derive(Serialize)]
     pub struct Index {
-        pub employees: Vec<models::Employee>,
+        pub employees_with_contacts: Vec<(models::Employee, Vec<models::EmployeeContact>)>,
     }
 }
 

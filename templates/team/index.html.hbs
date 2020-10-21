@@ -1,16 +1,22 @@
 <div class="container mt-4">
   <div class="row">
-    {{#each employees}}
+    {{#each employees_with_contacts}}
       <div class="col-sm-6 col-lg-4">
         <div class="card mt-4">
           <div class="card-body">
             <h5 class="card-title">
-              {{ this.name }}
+              {{ this.0.name }}
             </h5>
 
-            <h6 class="card-subtitle text-muted">
-              {{ this.role }}
+            <h6 class="card-subtitle text-muted mb-2">
+              {{ this.0.role }}
             </h6>
+
+            {{#each this.1}}
+              <a href="{{ this.link }}" class="card-link">
+                {{ this.name }}
+              </a>
+            {{/each}}
           </div>
         </div>
       </div>

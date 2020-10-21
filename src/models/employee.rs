@@ -35,4 +35,11 @@ impl Employee {
     pub fn all(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
         employees::table.load::<Self>(&*db_conn)
     }
+
+    pub fn all_with_contacts(db_conn: DbConn) -> Result<Vec<(Self, Vec<EmployeeContact>)>, diesel::result::Error> {
+        let employees = employees::table.load::<Self>(&*db_conn)?;
+        let contacts = EmployeeContact::belonging_to(&employees).load::<EmployeeContact>(&*db_conn)?.grouped_by(&employees);
+
+        Ok(employees.into_iter().zip(contacts).collect::<Vec<_>>())
+    }
 }
