@@ -1,1 +1,1 @@
-hello-world = Hello, World!
+fedihub = FediHub

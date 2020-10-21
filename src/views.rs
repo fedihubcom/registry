@@ -16,11 +16,9 @@ pub struct Error {
 }
 
 pub mod home {
-    use crate::models;
-
     #[derive(Serialize)]
     pub struct Index {
-        pub users: Vec<models::User>,
+        pub i18n_fedihub: String,
     }
 }
 

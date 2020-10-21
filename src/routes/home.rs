@@ -10,13 +10,17 @@ use rocket_csrf::CsrfToken;
 
 #[get("/")]
 pub fn index(
-    _i18n: State<I18n>,
+    i18n: State<I18n>,
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
+    let page_context = views::home::Index {
+        i18n_fedihub: i18n.dummy_translate("en", "fedihub"),
+    };
+
     let context = views::Site {
         page: "home/index".to_string(),
-        page_context: (),
+        page_context,
         authenticity_token: csrf_token.authenticity_token().to_string(),
         current_user: current_user.0,
     };
