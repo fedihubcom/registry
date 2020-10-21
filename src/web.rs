@@ -21,7 +21,9 @@ pub fn rocket(config: &config::Config) -> Result<rocket::Rocket, ()> {
         .manage(i18n)
         .manage(database::create_db_pool(config))
         .attach(rocket_csrf::Fairing::new())
-        .attach(Template::fairing())
+        .attach(Template::custom(|engines| {
+            engines.handlebars.set_strict_mode(true);
+        }))
         .mount("/", routes::routes())
         .mount("/", StaticFiles::new(public_path, ServeOptions::None));
 
