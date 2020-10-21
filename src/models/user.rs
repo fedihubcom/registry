@@ -24,25 +24,13 @@ impl User {
     pub fn find(db_conn: DbConn, id: i32)
         -> Result<Self, diesel::result::Error>
     {
-        let query = users::table.find(id);
-
-        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
-
-        println!("{}", debug);
-
-        query.first::<Self>(&*db_conn)
+        users::table.find(id).first::<Self>(&*db_conn)
     }
 
     pub fn by_username(db_conn: DbConn, username: String)
         -> Result<Self, diesel::result::Error>
     {
-        let query = users::table.filter(users::username.eq(username));
-
-        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
-
-        println!("{}", debug);
-
-        query.first::<Self>(&*db_conn)
+        users::table.filter(users::username.eq(username)).first::<Self>(&*db_conn)
     }
 
     pub fn authorize(&self, password: &String) -> bool {
@@ -69,12 +57,6 @@ impl NewUser {
     }
 
     pub fn save(&self, db_conn: DbConn) -> Result<User, diesel::result::Error> {
-        let query = diesel::insert_into(users::table).values(self);
-
-        let debug = diesel::debug_query::<diesel::pg::Pg, _>(&query);
-
-        println!("{}", debug);
-
-        Ok(query.get_result::<User>(&*db_conn)?)
+        diesel::insert_into(users::table).values(self).get_result::<User>(&*db_conn)
     }
 }
