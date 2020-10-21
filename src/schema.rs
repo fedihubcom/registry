@@ -20,6 +20,7 @@ table! {
 table! {
     employees (id) {
         id -> Int4,
+        image -> Varchar,
         name -> Varchar,
         role -> Varchar,
     }

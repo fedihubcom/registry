@@ -3,6 +3,8 @@
     {{#each employees_with_contacts}}
       <div class="col-sm-6 col-lg-4">
         <div class="card mt-4">
+          <img src="{{ this.0.image }}" class="card-img-top"/>
+
           <div class="card-body">
             <h5 class="card-title">
               {{ this.0.name }}

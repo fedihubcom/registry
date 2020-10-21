@@ -2,6 +2,7 @@
 
 CREATE TABLE employees (
   id SERIAL PRIMARY KEY,
+  image VARCHAR NOT NULL,
   name VARCHAR NOT NULL,
   role VARCHAR NOT NULL
 );
@@ -34,8 +35,8 @@ CREATE UNIQUE INDEX index_employee_contacts_on_employee_id
 -- Insert data
 
 WITH employee_ids AS (
-  INSERT INTO employees (name, role)
-    VALUES ('Alex Kotov', 'Founder')
+  INSERT INTO employees (image, name, role)
+    VALUES ('/kotovalexarian.jpg', 'Alex Kotov', 'Founder')
     RETURNING id
     AS employee_id
 )
@@ -51,8 +52,8 @@ WITH employee_ids AS (
       'https://fb.com/kotovalexarian');
 
 WITH employee_ids AS (
-  INSERT INTO employees (name, role)
-    VALUES ('Kirill Goncharov', 'System administrator')
+  INSERT INTO employees (image, name, role)
+    VALUES ('/xuhcc.png', 'Kirill Goncharov', 'System administrator')
     RETURNING id
     AS employee_id
 )

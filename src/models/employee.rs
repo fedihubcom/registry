@@ -9,6 +9,7 @@ use diesel::prelude::*;
 #[derive(Debug, Identifiable, Serialize, Queryable)]
 pub struct Employee {
     pub id: i32,
+    pub image: String,
     pub name: String,
     pub role: String,
 }
