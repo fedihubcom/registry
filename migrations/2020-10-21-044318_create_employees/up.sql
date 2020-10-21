@@ -29,4 +29,4 @@ CREATE UNIQUE INDEX index_employee_infos_on_employee_id_and_locale
   ON employee_infos USING btree (employee_id, locale);
 
 CREATE UNIQUE INDEX index_employee_contacts_on_employee_id
-  ON employee_contacts USING btree (employee_id);
+  ON employee_contacts USING btree (employee_id, name);
