@@ -16,5 +16,17 @@ CREATE TABLE employee_infos (
   CONSTRAINT employee_id_fk FOREIGN KEY (employee_id) REFERENCES employees(id)
 );
 
+CREATE TABLE employee_contacts (
+  id SERIAL PRIMARY KEY,
+  employee_id SERIAL NOT NULL,
+  name VARCHAR NOT NULL,
+  link VARCHAR NOT NULL,
+
+  CONSTRAINT employee_id_fk FOREIGN KEY (employee_id) REFERENCES employees(id)
+);
+
 CREATE UNIQUE INDEX index_employee_infos_on_employee_id_and_locale
   ON employee_infos USING btree (employee_id, locale);
+
+CREATE UNIQUE INDEX index_employee_contacts_on_employee_id
+  ON employee_contacts USING btree (employee_id);
