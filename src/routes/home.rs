@@ -14,9 +14,11 @@ pub fn index(
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
+    let l10n = i18n.l10n("en").unwrap();
+
     let page_context = views::home::Index {
-        i18n_fedihub: i18n.dummy_translate("en", "fedihub"),
-        i18n_federated_services_without_censorship: i18n.dummy_translate("en", "federated-services-without-censorship"),
+        i18n_fedihub: l10n.dummy_translate("fedihub"),
+        i18n_federated_services_without_censorship: l10n.dummy_translate("federated-services-without-censorship"),
     };
 
     let context = views::Site {
