@@ -16,6 +16,7 @@ pub fn index(
 ) -> Result<Template, CommonResponse> {
     let page_context = views::home::Index {
         i18n_fedihub: i18n.dummy_translate("en", "fedihub"),
+        i18n_federated_services_without_censorship: i18n.dummy_translate("en", "federated-services-without-censorship"),
     };
 
     let context = views::Site {
