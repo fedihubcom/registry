@@ -31,6 +31,15 @@ pub mod sessions {
     }
 }
 
+pub mod team {
+    use crate::models;
+
+    #[derive(Serialize)]
+    pub struct Index {
+        pub employees: Vec<models::Employee>,
+    }
+}
+
 pub mod users {
     #[derive(Serialize)]
     pub struct New {
