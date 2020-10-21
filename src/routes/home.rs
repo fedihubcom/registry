@@ -17,8 +17,8 @@ pub fn index(
     let l10n = i18n.l10n("en").unwrap();
 
     let page_context = views::home::Index {
-        i18n_fedihub: l10n.dummy_translate("fedihub"),
-        i18n_federated_services_without_censorship: l10n.dummy_translate("federated-services-without-censorship"),
+        i18n_fedihub: l10n.translate("fedihub").unwrap(),
+        i18n_federated_services_without_censorship: l10n.translate("federated-services-without-censorship").unwrap(),
     };
 
     let context = views::Site {

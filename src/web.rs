@@ -12,7 +12,10 @@ pub fn rocket(config: &config::Config) -> Result<rocket::Rocket, ()> {
     let public_path  = config.public_path()?;
     let locales_path = config.locales_path()?;
 
-    let i18n = I18n::new(&locales_path, &["en", "ru"])?;
+    let i18n = match I18n::new(&locales_path, &["en", "ru"]) {
+        Err(_) => return Err(()),
+        Ok(i18n) => i18n,
+    };
 
     let result = rocket::custom(rocket_config)
         .manage(i18n)
