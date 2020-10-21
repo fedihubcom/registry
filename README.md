@@ -1,2 +1,2 @@
-fedihub-registry
-================
+fedihub-website
+===============

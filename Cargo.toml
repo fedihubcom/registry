@@ -1,12 +1,12 @@
 [package]
-name = "fedihub-registry"
+name = "fedihub-website"
 version = "0.0.0"
 authors = ["Alex Kotov <kotovalexarian@gmail.com>"]
 edition = "2018"
-description = "User registry"
+description = "Our website"
 readme = "README.md"
 homepage = "https://fedihub.com"
-repository = "https://github.com/fedihubcom/registry"
+repository = "https://github.com/fedihubcom/website.git"
 license-file = "LICENSE"
 keywords = ["web"]
 categories = []
