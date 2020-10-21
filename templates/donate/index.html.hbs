@@ -1,0 +1,27 @@
+<div class="container">
+  <div class="row">
+    {{#each donation_crypto_addresses}}
+      <div class="col-lg-6">
+        <div class="card mt-4">
+          <div class="card-body">
+            <h5 class="card-title">
+              {{ this.name }}
+            </h5>
+
+            <h6 class="card-subtitle text-muted mb-2">
+              {{ this.code }}
+            </h6>
+
+            <p class="card-text">
+              <code>{{ this.address }}</code>
+            </p>
+
+            <a href="{{ this.history }}" target="_blank" class="card-link">
+              History
+            </a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+  </div>
+</div>

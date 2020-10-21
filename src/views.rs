@@ -15,6 +15,15 @@ pub struct Error {
     pub error_code: u16,
 }
 
+pub mod donate {
+    use crate::models;
+
+    #[derive(Serialize)]
+    pub struct Index {
+        pub donation_crypto_addresses: Vec<models::DonationCryptoAddress>,
+    }
+}
+
 pub mod home {
     #[derive(Serialize)]
     pub struct Index {
