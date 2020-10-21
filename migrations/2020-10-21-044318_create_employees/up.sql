@@ -36,7 +36,7 @@ CREATE UNIQUE INDEX index_employee_contacts_on_employee_id
 
 WITH employee_ids AS (
   INSERT INTO employees (image, name, role)
-    VALUES ('/kotovalexarian.jpg', 'Alex Kotov', 'Founder')
+    VALUES ('/database_files/kotovalexarian.jpg', 'Alex Kotov', 'Founder')
     RETURNING id
     AS employee_id
 )
@@ -53,7 +53,7 @@ WITH employee_ids AS (
 
 WITH employee_ids AS (
   INSERT INTO employees (image, name, role)
-    VALUES ('/xuhcc.png', 'Kirill Goncharov', 'System administrator')
+    VALUES ('/database_files/xuhcc.png', 'Kirill Goncharov', 'System administrator')
     RETURNING id
     AS employee_id
 )
