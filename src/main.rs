@@ -3,21 +3,19 @@
 #[cfg(test)] mod tests;
 
 mod config;
-mod web;
 mod database;
-mod states;
-mod routes;
-mod responses;
-mod views;
-mod schema;
-mod models;
 mod forms;
+mod models;
+mod responses;
+mod routes;
+mod schema;
+mod states;
+mod views;
+mod web;
 
 #[macro_use] extern crate diesel;
 #[macro_use] extern crate rocket;
 #[macro_use] extern crate serde_derive;
-
-extern crate rocket_contrib;
 
 fn main() {
     dotenv::dotenv().unwrap();
