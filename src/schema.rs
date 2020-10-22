@@ -37,6 +37,16 @@ table! {
 }
 
 table! {
+    reports (id) {
+        id -> Int4,
+        datetime -> Timestamp,
+        party -> Varchar,
+        amount -> Varchar,
+        download -> Varchar,
+    }
+}
+
+table! {
     users (id) {
         id -> Int4,
         username -> Varchar,
@@ -49,5 +59,6 @@ allow_tables_to_appear_in_same_query!(
     employee_contacts,
     employee_infos,
     employees,
+    reports,
     users,
 );
