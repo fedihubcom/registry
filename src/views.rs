@@ -32,6 +32,15 @@ pub mod home {
     }
 }
 
+pub mod reports {
+    use crate::models;
+
+    #[derive(Serialize)]
+    pub struct Index {
+        pub reports: Vec<models::Report>,
+    }
+}
+
 pub mod sessions {
     #[derive(Serialize)]
     pub struct New {
