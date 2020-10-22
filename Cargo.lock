@@ -1173,6 +1173,8 @@ dependencies = [
 [[package]]
 name = "rocket_csrf"
 version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "38bfa33a75da0542b60b03e18cc6840f13cf65167d36c86f29c222e9aa4d7cf8"
 dependencies = [
  "base64 0.13.0",
  "rand",
