@@ -17,7 +17,7 @@ pub fn index(
     csrf_token: CsrfToken,
     current_user: states::MaybeCurrentUser,
 ) -> Result<Template, CommonResponse> {
-    let reports = models::Report::all(db_conn)?;
+    let reports = models::Report::all_desc(db_conn)?;
 
     let page_context = views::reports::Index {
         reports,

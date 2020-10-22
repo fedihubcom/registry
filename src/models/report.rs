@@ -14,7 +14,7 @@ pub struct Report {
 }
 
 impl Report {
-    pub fn all(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
-        reports::table.load::<Self>(&*db_conn)
+    pub fn all_desc(db_conn: DbConn) -> Result<Vec<Self>, diesel::result::Error> {
+        reports::table.order(reports::datetime.desc()).load::<Self>(&*db_conn)
     }
 }
