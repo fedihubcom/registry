@@ -24,14 +24,6 @@ pub mod donate {
     }
 }
 
-pub mod home {
-    #[derive(Serialize)]
-    pub struct Index {
-        pub i18n_fedihub: String,
-        pub i18n_federated_services_without_censorship: String,
-    }
-}
-
 pub mod reports {
     use crate::models;
 
