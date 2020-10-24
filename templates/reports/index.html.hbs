@@ -1,20 +1,20 @@
 <div class="container mt-4">
-  <h1>Reports</h1>
+  <h1>{{ translate "en" "reports" }}</h1>
 
   <table class="table table-striped mt-3">
     <thead>
       <tr>
         <th scope="col">
-          Year, month
+          {{ translate "en" "year-month" }}
         </th>
         <th scope="col">
-          Seller/source
+          {{ translate "en" "seller-source" }}
         </th>
         <th scope="col">
-          Amount
+          {{ translate "en" "amount" }}
         </th>
         <th scope="col">
-          Download
+          {{ translate "en" "download" }}
         </th>
       </tr>
     </thead>
@@ -25,7 +25,7 @@
           <td>{{ this.datetime }}</td>
           <td>{{ this.party }}</td>
           <td>{{ this.amount }}</td>
-          <td><a href="{{ this.download }}">PDF</a></td>
+          <td><a href="{{ this.download }}">{{ translate "en" "pdf" }}</a></td>
         </tr>
       {{/each}}
     </tbody>

@@ -1,21 +1,21 @@
 <div class="container mt-4">
-  <h1>Sign In</h1>
+  <h1>{{ translate "en" "sign-in" }}</h1>
 
   <form method="post" action="/sign_in">
     <input type="hidden" name="authenticity_token" value="{{ authenticity_token }}"/>
 
     <div class="form-group">
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" value="{{ username }}" class="form-control" placeholder="Username"/>
+      <label for="username">{{ translate "en" "username" }}</label>
+      <input type="text" id="username" name="username" value="{{ username }}" class="form-control" placeholder="{{ translate "en" "username" }}"/>
     </div>
 
     <div class="form-group">
-      <label for="password">Password</label>
-      <input type="password" id="password" name="password" class="form-control" placeholder="Password"/>
+      <label for="password">{{ translate "en" "password" }}</label>
+      <input type="password" id="password" name="password" class="form-control" placeholder="{{ translate "en" "password" }}"/>
     </div>
 
     <button type="submit" class="btn btn-primary">
-      Sign In
+      {{ translate "en" "sign-in" }}
     </button>
   </form>
 </div>
