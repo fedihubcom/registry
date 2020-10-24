@@ -309,6 +309,7 @@ dependencies = [
  "diesel",
  "dotenv",
  "fluent-bundle",
+ "handlebars",
  "r2d2",
  "regex",
  "rocket",

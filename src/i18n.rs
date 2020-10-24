@@ -1,3 +1,5 @@
+pub mod handlebars_helpers;
+
 use std::collections::HashMap;
 
 use fluent_bundle::{FluentError, FluentResource};
